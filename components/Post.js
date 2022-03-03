@@ -49,12 +49,13 @@ class Post extends Component  {
  
   const post_id = this.props.route.params.item.post_id;
   console.log(this.state.text)
+  const Text = String(this.state.text);
 
   return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/post/"+post_id, {
     method: 'PATCH',
     headers: {'Content-Type': 'application/json','X-Authorization':  value},
     body: JSON.stringify({
-      text: this.state.text,
+      text: Text,
     })
   })
   .then((response) => {

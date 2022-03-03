@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { View, Text , FlatList ,Button,ScrollView,TextInput,Alert} from 'react-native';
+import { View, Text , FlatList ,Button,ScrollView,TextInput,Alert,TouchableOpacity,Image} from 'react-native';
 //import { Camera } from 'expo-camera';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TouchHistoryMath from 'react-native/Libraries/Interaction/TouchHistoryMath';
@@ -19,6 +19,9 @@ class Profile extends Component  {
       Posts: [],
       text: "",
       isLoading: true,
+      myPost: false,
+      photo: null,
+      
       
     }
   }
@@ -29,9 +32,6 @@ class Profile extends Component  {
     {
       this.checkLoggedIn();
       this.userCheck();
-      
-      
-
     });
     
   }
@@ -55,15 +55,17 @@ class Profile extends Component  {
   userCheck= async() =>
   {
     
-  console.log(this.state.title)
     try 
     {
+      console.log("someone elses profile")
       const id = this.props.route.params.id;
       this.setState({id: id})
+
       this.getFriendList(id);
+      this.ProfilePic(id);
       this.getUser(id);
       this.loadPosts(id);
-      console.log("someone elses profile")
+      
     } 
     catch (error) 
     {
@@ -73,6 +75,7 @@ class Profile extends Component  {
       const my_id = await AsyncStorage.getItem('@id');
       this.setState({id: my_id})
       this.getFriendList(my_id);
+      this.ProfilePic(my_id);
       this.getUser(my_id);
       this.loadPosts(my_id);
     }
@@ -330,6 +333,8 @@ class Profile extends Component  {
     })
     .then((response) => {
       if(response.status === 200){
+          this.setState({Type: ""})
+          this.setState({Freinds: true})
           return response.json()
       }else if(response.status === 401){
         return response.json()
@@ -339,7 +344,7 @@ class Profile extends Component  {
     })
     .then((responseJson) => {
       console.log(responseJson);
-      this.props.navigation.navigate("Home");
+      
       })
       
     
@@ -369,7 +374,8 @@ class Profile extends Component  {
     })
     .then((responseJson) => {
       console.log(responseJson);
-      this.props.navigation.navigate("Home");
+      this.setState({Type: "add"})
+     
       })
       
     
@@ -381,7 +387,6 @@ class Profile extends Component  {
   }
   loadPosts = async(id) =>{
 
-    console.log(id,"should be 9")
 
     const value = await AsyncStorage.getItem('@session_token');
 
@@ -410,16 +415,18 @@ class Profile extends Component  {
       if(responseJson == "" )
       {
         console.log("no posts")
+       
+
         this.setState({Posts: responseJson,
           isLoading: false
         })
       }
       else if(responseJson != "")
       {
+       
         this.setState({Posts: responseJson,
         isLoading: false
       })
-        console.log(this.state.Posts.post_id)
       }
 
     })
@@ -428,28 +435,23 @@ class Profile extends Component  {
     
     })
   }
-  checkPoster= async(my_id,post_id) =>
+  checkPoster= async(item) =>
   {
     const id = this.state.id;
+    const my_id = item.author.user_id
+    const post_id = item.post_id;
 
     console.log(id,my_id)
 
     if (id == my_id)
     {
-      return(
-      <View>
-        <Button 
-        title="Edit"
-        onPress={ () => this.props.navigation.navigate('Post',{ item: item}) }
-        />
-
-         <Button 
-        title="Delete"
-        //onPress={this.DeletePost(post_id)}
-        />
-        </View>
-        );
+      this.setState({myPost: true})
     }
+    else 
+    {
+      this.setState({myPost: false})
+    }
+    
   }
   DeletePost = async(Post_id)=>
   {
@@ -525,7 +527,8 @@ class Profile extends Component  {
       }
       else if(response.status === 201){
         this.setState({text: ""})
-        console.log("POST UPLOADED!!!");
+        this.loadPosts(this.state.id)
+        
         Alert.alert("Post Uploaded")
 
       }else{
@@ -557,6 +560,7 @@ class Profile extends Component  {
   
       .then((response) => {
         if(response.status === 200){
+            this.loadPosts(this.state.id)
             return response.json()
         }else if(response.status === 401){
           return response.json()
@@ -591,8 +595,8 @@ class Profile extends Component  {
 
     .then((response) => {
       if(response.status === 200){
+          this.loadPosts(this.state.id)
           return response.json()
-          //change to like button
       }else if(response.status === 401){
         return response.json()
        } else if(response.status == 403){
@@ -610,6 +614,34 @@ class Profile extends Component  {
     .catch((error) => {
         console.log(error);
         
+    })
+
+  }
+  ProfilePic = async()=>{
+    const value = await AsyncStorage.getItem('@session_token');
+    let id = this.state.id;
+
+    return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/photo", {
+      method: 'GET',
+      headers: {
+       'X-Authorization':  value
+      }
+    })
+    .then((res) => {
+      console.log(res)
+      return res.blob();
+  
+    })
+    .then((resBlob) => {
+      let data = URL.createObjectURL(resBlob);
+      this.setState({
+        photo: data
+      })
+      console.log(this.state.photo,"PHOTO HERE !!!!!!!!!!!1")
+    })
+    .catch((error) => {
+        console.log(error);
+    
     })
 
   }
@@ -644,12 +676,17 @@ class Profile extends Component  {
         </View>
       );
     }else{
-      
     return(
       <View>
 
       <Text>{this.state.User.first_name} {this.state.User.last_name} </Text>
-
+      <Image
+      
+        source={{ 
+          uri: this.state.photo,
+          //headers: {"X-Authorization": value}
+      }}
+      />
       <TextInput
               placeholder="Type New Post Here..."
               onChangeText={(text) => this.setState({text})}
@@ -693,6 +730,20 @@ class Profile extends Component  {
                       title={item.author.first_name+" "+item.author.last_name+"\n "+item.text+"\n Likes: "+(item.numLikes+"     "+item.timestamp)}
                       onPress={ () => this.props.navigation.navigate('ViewPost',{ items: item}) }
                       />
+
+                      <TouchableOpacity disabled={this.state.myPost}>
+
+                      <Button 
+                        title="Edit"
+                        onPress={ () => this.props.navigation.navigate('Post',{item: item}) }
+                        />
+
+                      <Button 
+                        title="Delete"
+                        onPress={ () => this.DeletePost(item.post_id)}
+                      />
+                    </TouchableOpacity>
+                      
                        
 
                       <Button
@@ -714,7 +765,7 @@ class Profile extends Component  {
     }
   }
 
- //<Text>{this.checkPoster(item.author.user_id,item.post_id)}</Text>
+ //<Text>{this.checkPoster(item)}</Text>
  /*
       </View>
       

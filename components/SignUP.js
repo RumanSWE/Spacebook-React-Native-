@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text , Button, ScrollView, TextInput } from 'react-native';
+import { View, Text , Button, ScrollView, TextInput ,Alert } from 'react-native';
 
 class SignUP extends Component{
   constructor(props){
@@ -25,9 +25,20 @@ class SignUP extends Component{
     .then((response) => {
         if(response.status === 201){
             return response.json()
-        }else if(response.status === 400){
-            throw 'Failed validation';
-        }else{
+        }else if(response.status === 400)
+        {
+            Alert.alert(
+                "Failed Validation",
+                "Invalid email/password supplied");   
+        }
+        else if(response.status == 500)
+        {
+            Alert.alert(
+                "Server Error",
+                "Server not responding");   
+        }
+        else
+        {
             throw 'Something went wrong';
         }
     })

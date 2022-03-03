@@ -89,10 +89,16 @@ class App extends Component {
             return null;
           }
         : undefined,
-         //
+         //{props => <Profile {...props} extraData={"is"} />}</Tab.Screen
          //<Tab.Screen name='Profile' component={Profile} options={{ title: 'Home' }} />
-    })}> 
-      <Tab.Screen name="Profile">  {props => <Profile {...props} extraData={"is"} />}</Tab.Screen>
+    })}>  
+      <Tab.Screen name="Profile" component={Profile} listeners={({ navigation, route }) => ({
+    tabPress: e => {
+      // Prevent default action
+      e.preventDefault();
+
+      navigation.navigate('Profile')
+    },})}/>
       <Tab.Screen name="Settings" component={Settings} />
       <Tab.Screen name="Freinds" component={MyFreinds} />
       <Tab.Screen name="Search" component={Search} />

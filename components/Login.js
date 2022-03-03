@@ -30,13 +30,15 @@ class Login extends Component {
         }
       else if(response.status === 400)
         {
-          throw 'Invalid email or password';
+          Alert.alert(
+            "Failed Validation",
+            "Invalid email/password supplied");   
         }
-        else if(response.status == 404)
+        else if(response.status == 500)
         {
-          console.log(response.json())
-          return response.json()
-          
+          Alert.alert(
+            "Serer Error",
+            "Server stopped responding");   
         }
       else
         {
