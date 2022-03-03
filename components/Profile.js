@@ -18,6 +18,7 @@ class Profile extends Component  {
       id: "",
       Posts: [],
       text: "",
+      isLoading: true,
       
     }
   }
@@ -54,13 +55,14 @@ class Profile extends Component  {
   userCheck= async() =>
   {
     
-  
+  console.log(this.state.title)
     try 
     {
       const id = this.props.route.params.id;
       this.setState({id: id})
       this.getFriendList(id);
       this.getUser(id);
+      this.loadPosts(id);
       console.log("someone elses profile")
     } 
     catch (error) 
@@ -248,8 +250,8 @@ class Profile extends Component  {
       console.log(error);
       
   })
-}
-addFreind = async(id) =>{
+  }
+  addFreind = async(id) =>{
     
   const value = await AsyncStorage.getItem('@session_token');
   
@@ -278,8 +280,8 @@ addFreind = async(id) =>{
       console.log(error);
       
   })
-}
-FreindButtonStatus= (data) =>
+  }
+  FreindButtonStatus= (data) =>
 {
   const id = this.state.id;
 
@@ -384,7 +386,6 @@ FreindButtonStatus= (data) =>
     const value = await AsyncStorage.getItem('@session_token');
 
     return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/post", {
-      method: 'GET',
       'headers': {
        'X-Authorization':  value
       }
@@ -405,24 +406,22 @@ FreindButtonStatus= (data) =>
     })
     .then((responseJson) => {
       
-      console.log(responseJson)
+      console.log(responseJson,"heleokepkdkekpdks")
       if(responseJson == "" )
       {
-        console.log(id,"no posts avaliable")
+        console.log("no posts")
+        this.setState({Posts: responseJson,
+          isLoading: false
+        })
       }
       else if(responseJson != "")
       {
-        this.setState({
-          Posts: responseJson,
+        this.setState({Posts: responseJson,
         isLoading: false
       })
-      console.log("before get likes")
-      this.GetLikes(responseJson.post_id)
+        console.log(this.state.Posts.post_id)
       }
 
-    
-
-   
     })
     .catch((error) => {
         console.log(error);
@@ -432,6 +431,8 @@ FreindButtonStatus= (data) =>
   checkPoster= async(my_id,post_id) =>
   {
     const id = this.state.id;
+
+    console.log(id,my_id)
 
     if (id == my_id)
     {
@@ -444,7 +445,7 @@ FreindButtonStatus= (data) =>
 
          <Button 
         title="Delete"
-        onPress={this.DeletePost(post_id)}
+        //onPress={this.DeletePost(post_id)}
         />
         </View>
         );
@@ -543,6 +544,75 @@ FreindButtonStatus= (data) =>
     })
 
   }
+  LikePost = async(post_id)=>
+  {
+    const value = await AsyncStorage.getItem('@session_token');
+    const id = this.state.id;
+
+      return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/post/"+post_id+"/like", {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json','X-Authorization':  value},
+      
+      })
+  
+      .then((response) => {
+        if(response.status === 200){
+            return response.json()
+        }else if(response.status === 401){
+          return response.json()
+        }
+        else if (response.status == 403){
+          Alert.alert("You Already Liked This Post!")
+        
+        }else{
+            throw 'Something went wrong';
+        }
+      })
+      .then((responseJson) => {
+        //this.setState({like: "unlike"})
+        })
+        
+      
+      .catch((error) => {
+          console.log(error);
+          
+      })
+  }
+  UnlikePost = async(post_id)=>
+  {
+    const value = await AsyncStorage.getItem('@session_token');
+    const id = this.state.id;
+
+    return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/post/"+post_id+"/like", {
+      method: 'DELETE',
+      headers: {'Content-Type': 'application/json','X-Authorization':  value},
+    
+    })
+
+    .then((response) => {
+      if(response.status === 200){
+          return response.json()
+          //change to like button
+      }else if(response.status === 401){
+        return response.json()
+       } else if(response.status == 403){
+      Alert.alert("You have not liked this post!")
+      
+      }else{
+          throw 'Something went wrong';
+      }
+    })
+    .then((responseJson) => {
+      this.setState({like: "like"})
+      })
+      
+    
+    .catch((error) => {
+        console.log(error);
+        
+    })
+
+  }
 
   //not freinds (show add freind,name and profile pic)
 
@@ -611,10 +681,9 @@ FreindButtonStatus= (data) =>
               )}
               keyExtractor={(item,index) => item.user_id.toString()}
       />
-  
-    <Text> Post List with add post button</Text>
-
-    <FlatList
+ 
+      
+      <FlatList
                 data={this.state.Posts}
                 renderItem={({item}) => 
                 (
@@ -624,7 +693,6 @@ FreindButtonStatus= (data) =>
                       title={item.author.first_name+" "+item.author.last_name+"\n "+item.text+"\n Likes: "+(item.numLikes+"     "+item.timestamp)}
                       onPress={ () => this.props.navigation.navigate('ViewPost',{ items: item}) }
                       />
-                      <Text>{this.checkPoster(item.author.user_id,item.post_id)}</Text>
                        
 
                       <Button
@@ -633,19 +701,33 @@ FreindButtonStatus= (data) =>
                       />
 
                        <Button
-                      title="Unlike" 
+                      title="Remove Like" 
                       onPress={() => {this.LikePost(item.post_id)}}
                       />
 
                     </ScrollView>
                 )}
               />
-    </View>
+              </View>
+        );
+      }
+    }
+  }
+
+ //<Text>{this.checkPoster(item.author.user_id,item.post_id)}</Text>
+ /*
+      </View>
       
 
-    );
-}
-  }
-}
-
+      );
+      if(this.state.isLoading){
+        return(
+          <View> <Text> LOADING I THINK</Text></View>
+        )
+      }
+      else{
+        return(
+        <View> 
+      <Text> Post List with add post button </Text>
+      */
 export default Profile;

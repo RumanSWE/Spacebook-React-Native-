@@ -89,8 +89,10 @@ class App extends Component {
             return null;
           }
         : undefined,
+         //
+         //<Tab.Screen name='Profile' component={Profile} options={{ title: 'Home' }} />
     })}> 
-      <Tab.Screen name="Profile" component={Profile}/>
+      <Tab.Screen name="Profile">  {props => <Profile {...props} extraData={"is"} />}</Tab.Screen>
       <Tab.Screen name="Settings" component={Settings} />
       <Tab.Screen name="Freinds" component={MyFreinds} />
       <Tab.Screen name="Search" component={Search} />
