@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import { View, Text , FlatList ,Button,ScrollView,TextInput,Alert,TouchableOpacity,Image} from 'react-native';
-//import { Camera } from 'expo-camera';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TouchHistoryMath from 'react-native/Libraries/Interaction/TouchHistoryMath';
 
@@ -14,15 +13,15 @@ class Profile extends Component  {
       Type: "",
       User: [],
       FriendList: [],
-      Freinds: false,
+      Freinds: null,
       id: "",
+      LoggedID: "",
       Posts: [],
       text: "",
       isLoading: true,
-      myPost: false,
+      myPost: null,
       photo: null,
-      
-      
+      TextError: "",
     }
   }
 
@@ -32,20 +31,19 @@ class Profile extends Component  {
     {
       this.checkLoggedIn();
       this.userCheck();
+      
     });
     
   }
-  
   componentWillUnmount() 
   {
     this.unsubscribe();
   }
-
   checkLoggedIn = async () => 
   {
   
     const value = await AsyncStorage.getItem('@session_token');
-    console.log(value)
+    
 
     if (value == null) 
     {
@@ -54,6 +52,8 @@ class Profile extends Component  {
   }
   userCheck= async() =>
   {
+    const my_id = await AsyncStorage.getItem('@id');
+    this.setState({LoggedID: my_id})
     
     try 
     {
@@ -64,7 +64,8 @@ class Profile extends Component  {
       this.getFriendList(id);
       this.ProfilePic(id);
       this.getUser(id);
-      this.loadPosts(id);
+     
+      
       
     } 
     catch (error) 
@@ -72,8 +73,9 @@ class Profile extends Component  {
       console.log("this is my own profile");
       this.setState({Freinds: true})
       
-      const my_id = await AsyncStorage.getItem('@id');
+      //const my_id = await AsyncStorage.getItem('@id');
       this.setState({id: my_id})
+
       this.getFriendList(my_id);
       this.ProfilePic(my_id);
       this.getUser(my_id);
@@ -116,12 +118,9 @@ class Profile extends Component  {
   })
   }
   getFriendList = async (id) => {
-   
-    console.log(id,"get freinds")
-    const value = await AsyncStorage.getItem('@session_token');
-    const my_id = await AsyncStorage.getItem('@id');
     
-
+    const value = await AsyncStorage.getItem('@session_token');
+    //const id = await AsyncStorage.getItem('@id');
     
     return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/friends", {
       'headers': {
@@ -133,71 +132,38 @@ class Profile extends Component  {
           return response.json()
       }else if(response.status === 401){
         this.props.navigation.navigate("Login");
-      }else if(response.status == 403)
-      {
-        {
-          console.log("not freinds")
-          this.setState({
-            Freinds: false,
-          })
-          this.FreindStatus(id);
-        }
-
       }
-      else if(responss.status == 200)
-      {
+      else if(response.status == 403){
         this.setState({
-          FriendList: responseJson,
-          Freinds: true,
+          Freinds: false
         })
-        this.loadPosts(my_id);
+        this.FreindStatus();
+        return response.json()
 
-      }
-      else
-      {
+      }else{
           throw 'Something went wrong';
       }
   })
+  .then((responseJson) => {
+    console.log("nope")
+    this.setState({
+      Freinds: true,
+      FriendList: responseJson,
+      isLoading: true,
+    })
+    this.loadPosts(id);
+    //console.log(this.state.FriendList ,"freind list")
+    
+    
+  })
   .catch((error) => {
-    console.log(error,"Freind List");
-    
-})
-
-
-   
-   
-  /*
-  if(this.state.Freinds == false)
-  {
-    for(let i = 0; i < responseJson.length; i++)
-    {
-      console.log(responseJson[i].user_id)
-      if (responseJson[i].user_id == my_id)
-      {
-        console.log("we are freinds")
-        this.setState({
-          Freinds: true,
-        })
-        
-      }
-      else
-      {
-        console.log("not freinds")
-        this.setState({
-          Freinds: false,
-        })
-        this.FreindStatus(id);
-      }
-    }
+      console.log(error);
+      
+  })
   }
-  */
-    
-  
- 
-  }
-  FreindStatus= async(id) =>
+  FreindStatus= async() =>
   {
-    console.log("status")
+    const id = this.state.id;
     
     const value = await AsyncStorage.getItem('@session_token');
     
@@ -218,12 +184,12 @@ class Profile extends Component  {
   })
   .then((responseJson) => {
 
-    console.log(responseJson)
+    console.log("freind status ran")
 
     if(responseJson.length == 0)
     {
-      console.log("add friend")
-      //add freind button now
+     
+      
       this.setState({
         Type: "add",
         })
@@ -233,16 +199,13 @@ class Profile extends Component  {
     {
       if (responseJson[i].user_id == id)
       {
-        console.log("accept/decline requst")
-        //make a accept or decline button
+        
         this.setState({
           Type: "accept",
           })
       }
       else
       {
-        console.log("add friend")
-        //add freind button now
         this.setState({
           Type: "add",
           })
@@ -266,16 +229,22 @@ class Profile extends Component  {
   })
   .then((response) => {
     if(response.status === 200){
+        this.FreindStatus;
         return response.json()
     }else if(response.status === 401){
+      return response.json()
+    }else if(response.status == 403)
+    {
+      this.FreindButtonStatus(this.setState({Type: "sent"}))
       return response.json()
     }else{
         throw 'Something went wrong';
     }
   })
   .then((responseJson) => {
-    //console.log(responseJson);
-    this.props.navigation.navigate("Home");
+    console.log(responseJson);
+
+    //this.props.navigation.navigate("Home");
     })
     
   
@@ -286,6 +255,7 @@ class Profile extends Component  {
   }
   FreindButtonStatus= (data) =>
 {
+  console.log(data)
   const id = this.state.id;
 
   data = String(data);
@@ -320,6 +290,21 @@ class Profile extends Component  {
       </View>
       );
     }
+    else if(data = "sent")
+    {
+      return(
+        
+        <View>
+        <Button 
+        title = "Add Freind"
+        onPress={ () => this.addFreind(id) } 
+            />
+        <Text> Freind Request Already Sent! </Text>
+        </View>
+          
+        
+      );
+    }
   }
   AcceptReq = async(id) =>{
     
@@ -333,8 +318,6 @@ class Profile extends Component  {
     })
     .then((response) => {
       if(response.status === 200){
-          this.setState({Type: ""})
-          this.setState({Freinds: true})
           return response.json()
       }else if(response.status === 401){
         return response.json()
@@ -344,6 +327,9 @@ class Profile extends Component  {
     })
     .then((responseJson) => {
       console.log(responseJson);
+      window.location.reload(false);
+      this.setState({Type: ""})
+      this.setState({Freinds: true})
       
       })
       
@@ -375,8 +361,9 @@ class Profile extends Component  {
     .then((responseJson) => {
       console.log(responseJson);
       this.setState({Type: "add"})
-     
+      window.location.reload(false);
       })
+
       
     
     .catch((error) => {
@@ -389,6 +376,7 @@ class Profile extends Component  {
 
 
     const value = await AsyncStorage.getItem('@session_token');
+    console.log(id)
 
     return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/post", {
       'headers': {
@@ -411,7 +399,7 @@ class Profile extends Component  {
     })
     .then((responseJson) => {
       
-      console.log(responseJson,"heleokepkdkekpdks")
+      
       if(responseJson == "" )
       {
         console.log("no posts")
@@ -435,29 +423,11 @@ class Profile extends Component  {
     
     })
   }
-  checkPoster= async(item) =>
-  {
-    const id = this.state.id;
-    const my_id = item.author.user_id
-    const post_id = item.post_id;
-
-    console.log(id,my_id)
-
-    if (id == my_id)
-    {
-      this.setState({myPost: true})
-    }
-    else 
-    {
-      this.setState({myPost: false})
-    }
-    
-  }
   DeletePost = async(Post_id)=>
   {
     console.log("DELETING")
     const value = await AsyncStorage.getItem('@session_token');
-    const id = this.state.id;
+    const id = this.state.LoggedID;
     
     return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/post/"+Post_id, {
       method: 'DELETE',
@@ -508,7 +478,7 @@ class Profile extends Component  {
 
     if(this.state.text == "" )
     {
-      return (Alert.alert("Please Type Something To Post"))
+      return this.setState({TextError: "Please Enter Text"})
     }
     
     return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/post", {
@@ -532,7 +502,7 @@ class Profile extends Component  {
         Alert.alert("Post Uploaded")
 
       }else{
-        console.log(response.status);
+        
           throw 'Something went wrong';
       }
     })
@@ -547,10 +517,11 @@ class Profile extends Component  {
     })
 
   }
-  LikePost = async(post_id)=>
+  LikePost = async(item)=>
   {
     const value = await AsyncStorage.getItem('@session_token');
     const id = this.state.id;
+    const post_id = item.post_id;
 
       return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/post/"+post_id+"/like", {
         method: 'POST',
@@ -578,14 +549,16 @@ class Profile extends Component  {
         
       
       .catch((error) => {
+          
           console.log(error);
           
       })
   }
-  UnlikePost = async(post_id)=>
+  UnlikePost = async(item)=>
   {
     const value = await AsyncStorage.getItem('@session_token');
-    const id = this.state.id;
+    const id = item.author.user_id;
+    const post_id = item.post_id;
 
     return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/post/"+post_id+"/like", {
       method: 'DELETE',
@@ -628,16 +601,16 @@ class Profile extends Component  {
       }
     })
     .then((res) => {
-      console.log(res)
+      
       return res.blob();
   
     })
     .then((resBlob) => {
+      Alert("hellO??")
       let data = URL.createObjectURL(resBlob);
       this.setState({
         photo: data
       })
-      console.log(this.state.photo,"PHOTO HERE !!!!!!!!!!!1")
     })
     .catch((error) => {
         console.log(error);
@@ -645,18 +618,50 @@ class Profile extends Component  {
     })
 
   }
+  SaveDraft = async()=>{
 
-  //not freinds (show add freind,name and profile pic)
+    
 
-  //user details (1)
-  //check if user is freinds with logged in user
-  //gets all posts for that user
-  //enable editing and deleting for own posts from logged in user
+    let draft = {  
+      id: String(this.state.LoggedID),  
+      text: String(this.state.text)
+    }  
+
+      const prev = [];
+      await AsyncStorage.getItem('draftStore')
+      
+      .then((prev) => {
+          if (prev == null)
+          {
+            const newArr =[];
+            newArr.push(draft)
+            AsyncStorage.setItem('draftStore', JSON.stringify(newArr));
+          }
+          else
+          {
+            const newArr = JSON.parse(prev)
+            newArr.push(draft);
+            AsyncStorage.setItem('draftStore', JSON.stringify(newArr));
+          }
+         
+      });  
+    
+    this.setState({TextError: "Draft Saved!"})
+   
+
+    console.log(await AsyncStorage.getItem('draftStore'))
+    
 
 
-  //the users freinds (1)
-  //user profile
-  //current logged in user 
+  }
+  DelDraft = async()=>{
+
+    await AsyncStorage.removeItem('draftStore');
+    console.log("deleted")
+    console.log(await AsyncStorage.getItem('draftStore'))
+
+
+  }
 
   render(){
 
@@ -671,38 +676,72 @@ class Profile extends Component  {
           }}>
 
           <Text>{this.state.User.first_name} {this.state.User.last_name} </Text>
+          
+          <Image
+          
+          source={{ 
+            uri: this.state.photo
+          }}
+
+          style={{ 
+            height: 100,
+            width: 100,
+            borderRadius: 50}}
+          />
+
           <Text>{this.FreindButtonStatus(this.state.Type)}</Text>
           
         </View>
       );
     }else{
     return(
-      <View>
+      <ScrollView>
+      
 
       <Text>{this.state.User.first_name} {this.state.User.last_name} </Text>
+
       <Image
       
         source={{ 
-          uri: this.state.photo,
-          //headers: {"X-Authorization": value}
-      }}
+          uri: this.state.photo
+        }}
+
+      style={{ 
+        height: 100,
+        width: 100,
+        borderRadius: 50}}
       />
+      
       <TextInput
               placeholder="Type New Post Here..."
               onChangeText={(text) => this.setState({text})}
               value={this.state.text}
               style={{padding:5, borderWidth:1, margin:5}}
         />
-
+      <Text>{this.state.TextError}</Text>
       <Button 
         title="Add New Post"
         onPress = {() => {this.AddPost()}}
       />
 
+      {this.state.id == this.state.LoggedID &&  
+      <Button
+      title="Save Draft"
+      onPress={() => {this.SaveDraft()}}
+      />
+      }
       
-      <Text>remove freind button here</Text>
-   
-      <Text>Freinds:</Text>
+      {this.state.id == this.state.LoggedID &&  
+      <Button
+      title="View Drafts"
+      onPress={ () => this.props.navigation.navigate('ViewDrafts') }
+      />
+      }
+      
+      
+
+
+      <Text>Friends List:</Text>
       <FlatList
               data={this.state.FriendList}
               getChildrenName={(data) => 'item'}
@@ -719,66 +758,61 @@ class Profile extends Component  {
               keyExtractor={(item,index) => item.user_id.toString()}
       />
  
-      
+ <Text>Posts:</Text>
       <FlatList
+      
                 data={this.state.Posts}
+                
                 renderItem={({item}) => 
+                
                 (
+                  
                     <ScrollView>
+
                       
+                    <Text> </Text>
                       <Button
                       title={item.author.first_name+" "+item.author.last_name+"\n "+item.text+"\n Likes: "+(item.numLikes+"     "+item.timestamp)}
-                      onPress={ () => this.props.navigation.navigate('ViewPost',{ items: item}) }
+                      onPress={ () => this.props.navigation.navigate('ViewPost',{items: item}) }
                       />
 
-                      <TouchableOpacity disabled={this.state.myPost}>
-
-                      <Button 
+                    {this.state.LoggedID == item.author.user_id &&
+                     <Button 
                         title="Edit"
                         onPress={ () => this.props.navigation.navigate('Post',{item: item}) }
-                        />
-
+                        
+                      />
+                    }
+                    
+                    {this.state.LoggedID == item.author.user_id &&
                       <Button 
                         title="Delete"
                         onPress={ () => this.DeletePost(item.post_id)}
                       />
-                    </TouchableOpacity>
-                      
-                       
+                    }
 
+
+                      {this.state.LoggedID != item.author.user_id &&
                       <Button
                       title="Like" 
-                      onPress={() => {this.LikePost(item.post_id)}}
+                      onPress={() => {this.LikePost(item)}}
                       />
-
+                      }
+                      {this.state.LoggedID != item.author.user_id &&
                        <Button
                       title="Remove Like" 
-                      onPress={() => {this.LikePost(item.post_id)}}
+                      onPress={() => {this.LikePost(item)}}
                       />
+                      }
 
                     </ScrollView>
                 )}
+                keyExtractor={(item,index) => item.author.user_id.toString()}
               />
-              </View>
+              </ScrollView>
         );
       }
     }
   }
 
- //<Text>{this.checkPoster(item)}</Text>
- /*
-      </View>
-      
-
-      );
-      if(this.state.isLoading){
-        return(
-          <View> <Text> LOADING I THINK</Text></View>
-        )
-      }
-      else{
-        return(
-        <View> 
-      <Text> Post List with add post button </Text>
-      */
 export default Profile;

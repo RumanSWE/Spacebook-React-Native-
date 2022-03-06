@@ -14,8 +14,6 @@ class Settings extends Component  {
       password:"",
       id: "",
       isLoading: true,
-      hasPermission: null,
-      type: Camera.Constants.Type.back
     }
 }
 async componentDidMount() 
@@ -27,8 +25,7 @@ async componentDidMount()
     this.checkLoggedIn();
     this.GetUser();
   });
-  const { status } = await Camera.requestCameraPermissionsAsync();
-  this.setState({hasPermission: status === 'granted'});
+  
   
 
  
@@ -193,45 +190,6 @@ checkLoggedIn = async () =>
     
 
   }
-  takePicture = async() =>{
-    console.log("PRessed")
-    console.log(this.camera)
-
-    if(this.camera)
-    {
-      const options = {
-        quality:0.5, 
-        based64:true,
-        onPictureSaved: (data => this.sendToServer(data))
-      };
-      const data = await this.camera.takePictureAsync(options);
-
-      console.log(data.uri);
-    }
-  }
-  sendToServer = async (data) => {
-
-    let value = await AsyncStorage.getItem('@session_token');
-    let id = await AsyncStorage.getItem('@id');
-
-    let res = await fetch(data.base64);
-    let blob = await res.blob();
-
-    return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/photo", {
-      method: 'POST',
-      headers: {'Content-Type': 'image/png','X-Authorization':  value},
-      body: blob
-    })
-
-  .then((response) => {
-    Alert.alert("Picture Added")
-    console.log("picture added", response)
-  })
-  .catch((err) => {
-    console.log(err);
-  })
-
-  }
   render(){
     if (this.state.isLoading){
       return (
@@ -245,7 +203,7 @@ checkLoggedIn = async () =>
           <Text>Loading..</Text>
         </View>
       );
-    }else if(this.state.hasPermission){
+    }else {
       return(
     
       <ScrollView>
@@ -284,47 +242,16 @@ checkLoggedIn = async () =>
             title="Update Information"
             onPress={() => this.updateItem()}
         />
+
+        <Button
+            title="Upload Photo"
+            onPress={ () => this.props.navigation.navigate('UploadPhoto')}
+        />
     
-          <Camera  
-          type={this.state.type}
-          ref={ref => this.camera = ref}>
-            
-              <TouchableOpacity
-                
-                onPress={() => {
-                  let type = type === Camera.Constants.Type.back
-                  ? Camera.Constants.Type.front
-                  : Camera.Constants.Type.back;
-
-                  this.setState({type: type});
-                }}>
-                <Text>Flip </Text>
-              </TouchableOpacity>
-
-              
-
-            
-          
-          <TouchableOpacity
-                //title="Take Picture"
-                onPress={() => {
-                  this.takePicture();
-                }}>
-                  <Text>Take Picture</Text>
-            </TouchableOpacity>
-            
-            </Camera>
           </ScrollView>
-      );
-    }else{
-      return(
-        <Text>No access to camera</Text>
       );
     }
   }
-
-    
-
 }
 
 export default Settings;

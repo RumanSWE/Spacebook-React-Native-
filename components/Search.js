@@ -10,7 +10,8 @@ class Search extends Component  {
 
   this.state= {
       search: "",
-      searchList: []
+      searchList: [],
+      text: ""
     }
   }
   componentDidMount() 
@@ -41,13 +42,13 @@ class Search extends Component  {
 
     if (this.state.search == "")
     {
-      return(Alert.alert("You searched nothing!"));
+      return this.setState({text: "Error: Cant Search For Nothing"})
     }
 
     const value = await AsyncStorage.getItem('@session_token');
     
     console.log("hello??");
-
+    this.setState({text: ""})
     
     return fetch("http://localhost:3333/api/1.0.0/search?q="+this.state.search, {
     
@@ -97,6 +98,7 @@ render() {
             title="Search"
             onPress={() => this.GetSearch()}
         />
+        <Text>{this.state.text}</Text>
         <FlatList
               data={this.state.searchList}
               renderItem={({item}) => (
@@ -114,4 +116,5 @@ render() {
     );
   }
 }
+
 export default Search;

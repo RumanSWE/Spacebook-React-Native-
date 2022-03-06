@@ -65,6 +65,8 @@ class MyFreinds extends Component  {
     })
     .then((responseJson) => {
       console.log(responseJson);
+      this.getReqList();
+      this.getFriendList();
       })
       
     
@@ -95,6 +97,8 @@ class MyFreinds extends Component  {
     })
     .then((responseJson) => {
       console.log(responseJson);
+      this.getReqList();
+      this.getFriendList();
       })
       
     
@@ -194,12 +198,13 @@ class MyFreinds extends Component  {
     return(
     
         <View>
+          <Text>Freind Requests: </Text>
           <FlatList
                 data={this.state.ReqList}
                 renderItem={({item}) => 
                 (
                     <ScrollView>
-                      <Text>Freind Requests</Text>
+                      
 
                     <Button
                     title={item.first_name+" "+item.last_name}

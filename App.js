@@ -19,6 +19,8 @@ import StyleSheet from './components/Style';
 import Login from './components/Login'
 import SignUP from './components/SignUP'
 import MyFreinds from './components/MyFreinds'
+import UploadPhoto from './components/UploadPhoto'
+import ViewDrafts from './components/ViewDrafts'
 
 import Search from './components/Search'
 
@@ -83,7 +85,9 @@ class App extends Component {
     screenOptions={({ route }) => ({
       tabBarButton: [
         "Post",
-        "ViewPost"
+        "ViewPost",
+        "UploadPhoto",
+        "ViewDrafts"
       ].includes(route.name)
         ? () => {
             return null;
@@ -103,8 +107,11 @@ class App extends Component {
       <Tab.Screen name="Freinds" component={MyFreinds} />
       <Tab.Screen name="Search" component={Search} />
 
+      <Tab.Screen name="UploadPhoto" component={UploadPhoto} />
       <Tab.Screen name="Post" component={Post} />
       <Tab.Screen name="ViewPost" component={ViewPost} />
+      <Tab.Screen name="ViewDrafts" component={ViewDrafts} />
+
       
       
     </Tab.Navigator>
