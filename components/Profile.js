@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
 import { View, Text , FlatList ,Button,ScrollView,TextInput,Alert,TouchableOpacity,Image} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import TouchHistoryMath from 'react-native/Libraries/Interaction/TouchHistoryMath';
-
+import { NavigationActions } from 'react-navigation';
 
 class Profile extends Component  {
 
@@ -373,9 +372,7 @@ class Profile extends Component  {
   }
   loadPosts = async(id) =>{
 
-
     const value = await AsyncStorage.getItem('@session_token');
-    console.log(id)
 
     return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/post", {
       'headers': {
@@ -519,7 +516,7 @@ class Profile extends Component  {
   LikePost = async(item)=>
   {
     const value = await AsyncStorage.getItem('@session_token');
-    const id = this.state.id;
+    const id = this.state.LoggedID;
     const post_id = item.post_id;
 
       return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/post/"+post_id+"/like", {
@@ -620,8 +617,6 @@ class Profile extends Component  {
   
   SaveDraft = async()=>{
 
-    
-
     let draft = {  
       id: String(this.state.LoggedID),  
       text: String(this.state.text)
@@ -646,17 +641,40 @@ class Profile extends Component  {
           {
             const newArr2 = JSON.parse(prev)
             newArr2.push(draft);
-            //AsyncStorage.setItem('draftStore', JSON.stringify(newArr2));
+            AsyncStorage.setItem('draftStore', JSON.stringify(newArr2));
           }
          
       });  
     
     this.setState({TextError: "Draft Saved!"})
-   
 
-    console.log(await AsyncStorage.getItem('draftStore'))
+  }
+  DateGet=(time)=>
+  {
+    const postDate = new Date(time);
+    const curDate = new Date();
+
+    const diff = Math.abs(curDate - postDate)
+
+    const diffDays = Math.ceil(diff / (1000 * 60 * 60 * 24)); 
+
+
+    if (diffDays <= 1)
+    {
+      return(Math.ceil(diff / (1000 * 60 * 60))+" Hours Ago");
+    }
+    else if (diffDays > 1)
+    {
+      return(diffDays+" Days Ago")
+    }
+    else if (diffDays > 30)
+    {
+     
+      return(postDate.toLocaleDateString('en-GB'))
+    }
     
-
+    
+    
 
   }
   
@@ -748,7 +766,15 @@ class Profile extends Component  {
                   <ScrollView>
                     <Button 
                     title={item.user_givenname+" "+item.user_familyname}
-                    onPress={ () => this.props.navigation.navigate('Profile',{ id: String(item.user_id)}) }/>
+                    //onPress={ () => NavigationActions.push({ routeName: 'Profile', params: {id: item.user_id} })}
+                    //onPress={() => this.props.navigation.push('Profile')}
+                    //onPress={() => useNavigate('Profile')}
+                    //onPress={ () => this.props.navigate('Profile',{ id: String(item.user_id)}) }
+                   //\ onPress={this.props.navigation.replace('Profile', {id: String(item.user_id) }) }
+                   //onPress={() => NavigationActions.navigate({ routeName: 'profile', params: {id: itme.user_id} })}
+                   
+
+                    />
                     
 
                   </ScrollView>
@@ -770,10 +796,11 @@ class Profile extends Component  {
                       
                     <Text> </Text>
                       <Button
-                      title={item.author.first_name+" "+item.author.last_name+"\n "+item.text+"\n Likes: "+(item.numLikes+"     "+item.timestamp)}
-                      onPress={ () => this.props.navigation.navigate('ViewPost',{items: item}) }
+                      title={item.author.first_name+" "+item.author.last_name+"\n "+item.text+"\n Likes: "+(item.numLikes+"     "+this.DateGet(item.timestamp))}
+                      onPress={ () => this.props.navigation.navigate('ViewPost',{items: item,id: this.state.id}) }
                       />
-
+                    {console.log(item.author.user_id)}
+                    
                     {this.state.LoggedID == item.author.user_id &&
                      <Button 
                         title="Edit"
@@ -799,7 +826,7 @@ class Profile extends Component  {
                       {this.state.LoggedID != item.author.user_id &&
                        <Button
                       title="Remove Like" 
-                      onPress={() => {this.LikePost(item)}}
+                      onPress={() => {this.UnlikePost(item)}}
                       />
                       }
 

@@ -14,6 +14,7 @@ class Settings extends Component  {
       password:"",
       id: "",
       isLoading: true,
+      TextError: "Please Fill In All Blank Fields",
     }
 }
 async componentDidMount() 
@@ -135,13 +136,9 @@ checkLoggedIn = async () =>
       })
       .then((response) => {
         if(response.status === 200){
-          Alert.alert(
-            "Success",
-            "Information Updated");   
+          this.setState({TextError:"Information Sucessfully Updated"})
         }else if(response.status === 401){
-          Alert.alert(
-            "Error",
-            "Please enter information with the correct values");
+          this.setState({TextError:"Error Bad / Missing Data"})
         }else{
             throw 'Something went wrong';
         }
@@ -171,9 +168,9 @@ checkLoggedIn = async () =>
     })
     .then((response) => {
       if(response.status === 200){
-          return response.json()
+        this.setState({TextError:"Information Sucessfully Updated"})
       }else if(response.status === 401){
-        return response.json()
+        this.setState({TextError:"Error Bad / Missing Data"})
       }else{
           throw 'Something went wrong';
       }
@@ -247,7 +244,7 @@ checkLoggedIn = async () =>
             title="Upload Photo"
             onPress={ () => this.props.navigation.navigate('UploadPhoto')}
         />
-    
+        <Text>{this.state.TextError}</Text>
           </ScrollView>
       );
     }

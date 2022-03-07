@@ -10,7 +10,8 @@ class UploadPhoto extends Component  {
         this.state = {
           isLoading: true,
           hasPermission: null,
-          type: Camera.Constants.Type.back
+          type: Camera.Constants.Type.back,
+          TextError: "",
         }
     }
     async componentDidMount() 
@@ -43,8 +44,6 @@ checkLoggedIn = async () =>
   }
 };
     takePicture = async() =>{
-        console.log("PRessed")
-        console.log(this.camera)
     
         if(this.camera)
         {
@@ -73,6 +72,7 @@ checkLoggedIn = async () =>
         })
     
       .then((response) => {
+        this.setState({TextError:"Picture Uploaded"})
         Alert.alert("Picture Added")
         console.log("picture added", response)
       })
@@ -127,7 +127,7 @@ checkLoggedIn = async () =>
           </TouchableOpacity>
             
         </Camera>
-        
+        <Text>{this.state.TextError}</Text>
         </View>
     );
   }else{

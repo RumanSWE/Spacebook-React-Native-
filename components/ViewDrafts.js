@@ -14,6 +14,7 @@ class ViewDrafts extends Component  {
         fullDraft: [],
         isLoading: true,
         TextError: "",
+        initialText: [],
 
     }
   }
@@ -68,17 +69,19 @@ class ViewDrafts extends Component  {
 
     
   }
-  getDrafts = async()=>{
-    
-    
+  getDrafts = async()=>{  
+  
     let my_id = await AsyncStorage.getItem('@id');  
+    let get = await AsyncStorage.getItem('draftStore');  
+    let parsed = JSON.parse(get);
 
-    let t = await AsyncStorage.getItem('draftStore');  
-    let parsed = JSON.parse(t);
+    console.log(parsed)
+    
     
     this.setState({fullDraft: parsed})
 
-    const textList = [];
+    let textList = [];
+    let other = [];
     
     if(parsed.length == 0)
     {
@@ -90,17 +93,17 @@ class ViewDrafts extends Component  {
     {
         if(parsed[i].id == my_id)
         {
-            console.log(parsed[i].text);
             textList.push(parsed[i].text);
-
+            other.push(parsed[i].text);
         }
 
     }
-    
+
+    this.setState({initialText: other})
     this.setState({texts: textList})
+   
     this.setState({isLoading: false})
 
-    //this.setState({texts: "hlloe"})
   }
   AddPost = async(index)=>
   {
@@ -147,6 +150,44 @@ class ViewDrafts extends Component  {
     })
 
   }
+  saveDraft = async(index)=> 
+  {
+
+    let id = await AsyncStorage.getItem('@id'); 
+    
+    let curText = this.state.texts[index];
+    let list = this.state.fullDraft
+    let oldText = this.state.initialText[index];
+
+    if(curText == "")
+    {
+      return
+    }
+    else 
+    {
+      for(let i = 0; i < list.length; i++)
+      {
+        if((list[i].id == id) && (list[i].text == oldText))
+        {
+          list[i].text = curText;
+          
+          let initialText = this.state.initialText;
+          initialText[index] = curText;
+          this.setState({initialText})
+
+          this.setState({fullDraft: list})
+          console.log(list[i].text)
+          console.log(list)
+          AsyncStorage.setItem('draftStore', JSON.stringify(list))
+
+        }
+      }
+
+    }
+
+
+
+  }
     render(){
       if (this.state.isLoading){
         return (
@@ -157,6 +198,10 @@ class ViewDrafts extends Component  {
               justifyContent: 'center',
               alignItems: 'center',
             }}>
+            <Button 
+              title="Back"
+              onPress={() => this.props.navigation.goBack()} 
+            />
   
             <Text>Loading</Text>
 
@@ -168,7 +213,10 @@ class ViewDrafts extends Component  {
       }else{
         return(
         <View>
-            
+              <Button 
+              title="Back"
+              onPress={() => this.props.navigation.goBack()} 
+              />
           
             <FlatList
               data={this.state.texts}
@@ -177,12 +225,23 @@ class ViewDrafts extends Component  {
               (
                   <ScrollView>
 
+            
+
             <TextInput
-              onChangeText={this.state.texts[index]}
+             onChangeText={text => {
+              let texts  = this.state.texts;
+              texts[index] = text;
+              this.setState({texts});
+            }}
               value={this.state.texts[index]}
               style={{padding:5, borderWidth:1, margin:5}}
             />
             <Text>{this.state.TextError}</Text>
+
+                    <Button
+                    title="Save Edit To Storage"
+                    onPress={() => {this.saveDraft(index)}}
+                    />
                     
                     <Button
                     title="delete"

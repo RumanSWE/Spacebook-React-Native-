@@ -64,7 +64,7 @@ class MyFreinds extends Component  {
       }
     })
     .then((responseJson) => {
-      console.log(responseJson);
+      
       this.getReqList();
       this.getFriendList();
       })
@@ -134,7 +134,6 @@ class MyFreinds extends Component  {
       FriendList: responseJson,
       isLoading: false,
     })
-    console.log(this.state.FriendList ,"freind list")
     
     
   })
@@ -167,7 +166,7 @@ class MyFreinds extends Component  {
     this.setState({
       ReqList: responseJson
     })
-    console.log(this.state.ReqList , "reqList");
+    
     
     
   })

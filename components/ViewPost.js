@@ -11,7 +11,8 @@ class ViewPost extends Component  {
     this.state =
     { 
       post: "",
-      isLoading: true
+      isLoading: true,
+      
     }
   }
   async componentDidMount() 
@@ -20,8 +21,6 @@ class ViewPost extends Component  {
     {
       this.checkLoggedIn();
       this.GetSinglePost(this.props.route.params.items);
-     
-      
     });
   }  
   componentWillUnmount() 
@@ -40,12 +39,13 @@ class ViewPost extends Component  {
   };
   GetSinglePost = async (items) => {
 
-    const postid = items.post_id;
-    const userid = items.author.user_id;
+    const postid = items.post_id;    
+    const id = this.props.route.params.id
+    
     
     const value = await AsyncStorage.getItem('@session_token');
     
-    return fetch("http://localhost:3333/api/1.0.0/user/"+userid+"/post/"+postid, {
+    return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/post/"+postid, {
       'headers': {
         'X-Authorization':  value
       }
@@ -83,12 +83,20 @@ render(){
               justifyContent: 'center',
               alignItems: 'center',
             }}>
+            <Button 
+              title="Back"
+              onPress={() => this.props.navigation.goBack()} 
+            />
             <Text>Loading..</Text>
           </View>
         );
       }else{
     return(
         <View>
+            <Button 
+              title="Back"
+              onPress={() => this.props.navigation.goBack()} 
+            />
             <Text>{this.state.post.author.first_name+" "+this.state.post.author.last_name}</Text>
             <Text>{this.state.post.timestamp}</Text>
             <Text>{this.state.post.text}</Text>

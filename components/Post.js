@@ -94,7 +94,7 @@ class Post extends Component  {
         <View> 
           
         <Button 
-        title="back"
+        title="Back"
         onPress={() => this.props.navigation.goBack()} 
         />
         
