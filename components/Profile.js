@@ -73,7 +73,7 @@ class Profile extends Component  {
       console.log("this is my own profile");
       this.setState({Freinds: true})
       
-      //const my_id = await AsyncStorage.getItem('@id');
+      
       this.setState({id: my_id})
 
       this.getFriendList(my_id);
@@ -120,7 +120,6 @@ class Profile extends Component  {
   getFriendList = async (id) => {
     
     const value = await AsyncStorage.getItem('@session_token');
-    //const id = await AsyncStorage.getItem('@id');
     
     return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/friends", {
       'headers': {
@@ -618,6 +617,7 @@ class Profile extends Component  {
     })
 
   }
+  
   SaveDraft = async()=>{
 
     
@@ -626,6 +626,11 @@ class Profile extends Component  {
       id: String(this.state.LoggedID),  
       text: String(this.state.text)
     }  
+
+    if(draft.text == "")
+    {
+      return this.setState({TextError: "No Text Has Been Inputted"})
+    }
 
       const prev = [];
       await AsyncStorage.getItem('draftStore')
@@ -639,9 +644,9 @@ class Profile extends Component  {
           }
           else
           {
-            const newArr = JSON.parse(prev)
-            newArr.push(draft);
-            AsyncStorage.setItem('draftStore', JSON.stringify(newArr));
+            const newArr2 = JSON.parse(prev)
+            newArr2.push(draft);
+            //AsyncStorage.setItem('draftStore', JSON.stringify(newArr2));
           }
          
       });  
@@ -654,14 +659,7 @@ class Profile extends Component  {
 
 
   }
-  DelDraft = async()=>{
-
-    await AsyncStorage.removeItem('draftStore');
-    console.log("deleted")
-    console.log(await AsyncStorage.getItem('draftStore'))
-
-
-  }
+  
 
   render(){
 
