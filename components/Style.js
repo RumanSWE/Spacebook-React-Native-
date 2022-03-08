@@ -1,8 +1,7 @@
 import {StyleSheet} from 'react-native'
 
-const Style = StyleSheet.create({
-
-Colors: 
+export default StyleSheet.create({
+    Colors: 
   {
     primary: '#226B74',
     secondary: '#254B5A',
@@ -15,9 +14,12 @@ Colors:
 welcome: 
   {
     textAlign: 'center'
+  },
+centerText:{
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
   }
 
 });
-
-
-export { Style }

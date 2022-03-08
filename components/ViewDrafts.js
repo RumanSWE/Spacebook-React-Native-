@@ -1,12 +1,18 @@
 import React, {Component} from 'react';
-import { ScrollView ,View ,Text ,FlatList, Button,TextInput} from 'react-native';
+import { ScrollView ,View ,Text ,FlatList, Button,TextInput  } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-//Add the ablity to show user profile of requested user and able to click on the name and link to there profile
 
+//Add the ablity to show user profile of requested user and able to click on the name and link to there profile
 class ViewDrafts extends Component  {
 
+
+  
+
+  
   constructor(props){
+    
+
     super(props);
     this.state =
     { 
@@ -15,15 +21,20 @@ class ViewDrafts extends Component  {
         isLoading: true,
         TextError: "",
         initialText: [],
+        date: "",
+        time: "",
 
     }
   }
+
+  
   async componentDidMount() 
   {
     this.unsubscribe = this.props.navigation.addListener('focus', () => 
     {
       this.checkLoggedIn();
       this.getDrafts()
+      
     
     });
     
@@ -101,6 +112,7 @@ class ViewDrafts extends Component  {
 
     this.setState({initialText: other})
     this.setState({texts: textList})
+    
    
     this.setState({isLoading: false})
 
@@ -188,6 +200,29 @@ class ViewDrafts extends Component  {
 
 
   }
+  setDate = async () =>
+  {
+      let curDate = new Date()
+      let ShortCurdate = curDate.getDate()+"/"+(curDate.getMonth()+1)+"/"+curDate.getFullYear()
+      
+      let time = this.state.time;
+
+
+      let date = new Date(String(this.state.date));
+      console.log(date.toLocaleString())
+
+      if(date == "invalid date")
+      {
+        return 
+      }
+      else
+      {
+
+      }
+
+      
+  }
+ 
     render(){
       if (this.state.isLoading){
         return (
@@ -213,6 +248,11 @@ class ViewDrafts extends Component  {
       }else{
         return(
         <View>
+              
+          
+
+               
+
               <Button 
               title="Back"
               onPress={() => this.props.navigation.goBack()} 
@@ -223,7 +263,7 @@ class ViewDrafts extends Component  {
               getChildrenName={(data) => 'item'}
               renderItem={({item,index}) => 
               (
-                  <ScrollView>
+            <ScrollView>
 
             
 
@@ -252,9 +292,23 @@ class ViewDrafts extends Component  {
                     title="Upload Now"
                     onPress={() => {this.AddPost(index)}}
                     />
+                    <TextInput 
+                    placeholder='DD/MM/YYYY'
+                    value={this.state.date}
+                    onChangeText={(date) => this.setState({ date })}
+                    style={{padding:5, borderWidth:0.5, margin:5}}
+                    
+                    />
 
+                    <TextInput 
+                    placeholder='HH:MM'
+                    onChange={this.state.time}
+                    style={{padding:5, borderWidth:0.5, margin:5}}
+                    
+                    />
                     <Button
                     title="Schedule Upload"
+                    onPress={() => this.setDate()}
                     />
 
                   </ScrollView>

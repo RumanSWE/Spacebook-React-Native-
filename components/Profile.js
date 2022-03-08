@@ -2,6 +2,9 @@ import React, {Component} from 'react';
 import { View, Text , FlatList ,Button,ScrollView,TextInput,Alert,TouchableOpacity,Image} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationActions } from 'react-navigation';
+import Style from "./Style"
+
+
 
 class Profile extends Component  {
 
@@ -21,6 +24,7 @@ class Profile extends Component  {
       myPost: null,
       photo: null,
       TextError: "",
+      falseText: "",
     }
   }
 
@@ -31,8 +35,7 @@ class Profile extends Component  {
       this.checkLoggedIn();
       this.userCheck();
       
-    });
-    
+    }); 
   }
   componentWillUnmount() 
   {
@@ -51,20 +54,22 @@ class Profile extends Component  {
   }
   userCheck= async() =>
   {
-    const my_id = await AsyncStorage.getItem('@id');
+    //this.setState({Freinds: false})
+    this.setState({Posts: []})
+
+    let my_id = await AsyncStorage.getItem('@id');
     this.setState({LoggedID: my_id})
     
     try 
     {
-      console.log("someone elses profile")
       const id = this.props.route.params.id;
+      console.log("someone elses profile")
       this.setState({id: id})
 
-      this.getFriendList(id);
-      this.ProfilePic(id);
-      this.getUser(id);
-     
-      
+      this.getFriendList();
+      this.ProfilePic();
+      this.loadPosts();
+      this.getUser();
       
     } 
     catch (error) 
@@ -75,17 +80,16 @@ class Profile extends Component  {
       
       this.setState({id: my_id})
 
-      this.getFriendList(my_id);
-      this.ProfilePic(my_id);
-      this.getUser(my_id);
-      this.loadPosts(my_id);
+      this.getFriendList();
+      this.ProfilePic();
+      this.loadPosts();
+      this.getUser();
+      
     }
-   
-
-    
-
   }
-  getUser= async (id) => {
+  getUser= async () => {
+
+    let id = this.state.id;
 
     const value = await AsyncStorage.getItem('@session_token');
     
@@ -116,9 +120,13 @@ class Profile extends Component  {
       
   })
   }
-  getFriendList = async (id) => {
+  getFriendList = async () => {
+
+    let id = this.state.id
     
-    const value = await AsyncStorage.getItem('@session_token');
+    let value = await AsyncStorage.getItem('@session_token');
+
+    console.log("Freindlist")
     
     return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/friends", {
       'headers': {
@@ -127,29 +135,34 @@ class Profile extends Component  {
     })
     .then((response) => {
       if(response.status === 200){
-          return response.json()
+        console.log("200")
+        this.setState({
+          Freinds: true,
+          FriendList: responseJson
+        })
+       
       }else if(response.status === 401){
+        console.log("401")
         this.props.navigation.navigate("Login");
       }
       else if(response.status == 403){
+        console.log("403")
         this.setState({
           Freinds: false
         })
         this.FreindStatus();
-        return response.json()
 
       }else{
           throw 'Something went wrong';
       }
   })
   .then((responseJson) => {
-    console.log("nope")
-    this.setState({
-      Freinds: true,
-      FriendList: responseJson,
-      isLoading: true,
-    })
-    this.loadPosts(id);
+    console.log(responseJson)
+    
+    
+
+   
+    
     //console.log(this.state.FriendList ,"freind list")
     
     
@@ -215,9 +228,10 @@ class Profile extends Component  {
       
   })
   }
-  addFreind = async(id) =>{
-    
-  const value = await AsyncStorage.getItem('@session_token');
+  addFreind = async() =>{
+  
+  let id = this.state.id;
+  let value = await AsyncStorage.getItem('@session_token');
   
   return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/friends", {
     method: 'POST',
@@ -227,14 +241,13 @@ class Profile extends Component  {
   })
   .then((response) => {
     if(response.status === 200){
+      this.setState({falseText: "Freind Request Sent!"})
         this.FreindStatus;
-        return response.json()
     }else if(response.status === 401){
       return response.json()
     }else if(response.status == 403)
     {
-      this.FreindButtonStatus(this.setState({Type: "sent"}))
-      return response.json()
+      this.setState({falseText: "Freind Request Already Sent!"})
     }else{
         throw 'Something went wrong';
     }
@@ -254,7 +267,7 @@ class Profile extends Component  {
   FreindButtonStatus= (data) =>
 {
   console.log(data)
-  const id = this.state.id;
+  
 
   data = String(data);
 
@@ -264,8 +277,9 @@ class Profile extends Component  {
       <View>
         <Button 
         title = "Add Freind"
-        onPress={ () => this.addFreind(id) } 
+        onPress={ () => this.addFreind() } 
         />
+        <Text>{this.state.falseText}</Text>
       </View>
   );
     
@@ -276,36 +290,22 @@ class Profile extends Component  {
       <View>
       <Button 
         title = "Accept"
-        onPress={ () => this.AcceptReq(id) }
+        onPress={ () => this.AcceptReq() }
 
       />
       <Button 
         title = "Decline"
-        onPress={ () => this.DeclineReq(id) }
+        onPress={ () => this.DeclineReq() }
         
         
       />
       </View>
       );
     }
-    else if(data = "sent")
-    {
-      return(
-        
-        <View>
-        <Button 
-        title = "Add Freind"
-        onPress={ () => this.addFreind(id) } 
-            />
-        <Text> Freind Request Already Sent! </Text>
-        </View>
-          
-        
-      );
-    }
   }
-  AcceptReq = async(id) =>{
+  AcceptReq = async() =>{
     
+    let id = this.state.id;
     const value = await AsyncStorage.getItem('@session_token');
     
     return fetch("http://localhost:3333/api/1.0.0/friendrequests/"+id, {
@@ -316,6 +316,7 @@ class Profile extends Component  {
     })
     .then((response) => {
       if(response.status === 200){
+        window.location.reload(false);
           return response.json()
       }else if(response.status === 401){
         return response.json()
@@ -324,10 +325,11 @@ class Profile extends Component  {
       }
     })
     .then((responseJson) => {
+      
       console.log(responseJson);
-      window.location.reload(false);
       this.setState({Type: ""})
       this.setState({Freinds: true})
+      this.userCheck();
       
       })
       
@@ -337,8 +339,9 @@ class Profile extends Component  {
         
     })
   }
-  DeclineReq = async(id) =>{
-    
+  DeclineReq = async() =>{
+
+    let id = this.state.id;
     const value = await AsyncStorage.getItem('@session_token');
     
     return fetch("http://localhost:3333/api/1.0.0/friendrequests/"+id, {
@@ -359,7 +362,7 @@ class Profile extends Component  {
     .then((responseJson) => {
       console.log(responseJson);
       this.setState({Type: "add"})
-      window.location.reload(false);
+      this.userCheck();
       })
 
       
@@ -370,7 +373,12 @@ class Profile extends Component  {
     })
   
   }
-  loadPosts = async(id) =>{
+  loadPosts = async() =>{
+
+    console.log("Load posts")
+    
+    let id = this.state.id
+    console.log("herewijdijidjiajdi",id)
 
     const value = await AsyncStorage.getItem('@session_token');
 
@@ -395,22 +403,26 @@ class Profile extends Component  {
     })
     .then((responseJson) => {
       
-      
+      console.log(responseJson,"all post resposnes!!!!!!!!!!!")
       if(responseJson == "" )
       {
-        console.log("no posts")
-       
-
-        this.setState({Posts: responseJson,
+        console.log("goodbye")
+        this.setState({
+          Posts: [],
           isLoading: false
         })
+        
+        this.setState({TextError: "No Posts On Your Profile"})
       }
       else if(responseJson != "")
       {
-       
-        this.setState({Posts: responseJson,
-        isLoading: false
+        console.log("hello??")
+        this.setState({
+          Posts: responseJson,
+          isLoading: false
       })
+     
+      
       }
 
     })
@@ -493,7 +505,7 @@ class Profile extends Component  {
       }
       else if(response.status === 201){
         this.setState({text: ""})
-        this.loadPosts(this.state.id)
+        this.loadPosts();
         
         Alert.alert("Post Uploaded")
 
@@ -527,7 +539,7 @@ class Profile extends Component  {
   
       .then((response) => {
         if(response.status === 200){
-            this.loadPosts(this.state.id)
+            this.loadPosts()
             return response.json()
         }else if(response.status === 401){
           return response.json()
@@ -564,7 +576,7 @@ class Profile extends Component  {
 
     .then((response) => {
       if(response.status === 200){
-          this.loadPosts(this.state.id)
+          this.loadPosts()
           return response.json()
       }else if(response.status === 401){
         return response.json()
@@ -614,7 +626,6 @@ class Profile extends Component  {
     })
 
   }
-  
   SaveDraft = async()=>{
 
     let draft = {  
@@ -672,26 +683,25 @@ class Profile extends Component  {
      
       return(postDate.toLocaleDateString('en-GB'))
     }
-    
-    
-    
-
   }
-  
 
   render(){
+  
+  if(this.state.isLoading){
+    return (
+      <View style={Style.centerText}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+  else{
 
     if (this.state.Freinds == false){
       return (
         <View
-          style={{
-            flex: 1,
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
+          style={Style.centerText}>
 
-          <Text>{this.state.User.first_name} {this.state.User.last_name} </Text>
+         
           
           <Image
           
@@ -705,6 +715,8 @@ class Profile extends Component  {
             borderRadius: 50}}
           />
 
+        <Text style={{ }}>{this.state.User.first_name} {this.state.User.last_name} </Text>
+
           <Text>{this.FreindButtonStatus(this.state.Type)}</Text>
           
         </View>
@@ -714,7 +726,9 @@ class Profile extends Component  {
       <ScrollView>
       
 
-      <Text>{this.state.User.first_name} {this.state.User.last_name} </Text>
+      
+      <View style={{justifyContent: 'center',
+            alignItems: 'center'}}>
 
       <Image
       
@@ -727,7 +741,9 @@ class Profile extends Component  {
         width: 100,
         borderRadius: 50}}
       />
-      
+
+      <Text style={{fontWeight: 'bold',fontSize: 25}}>{this.state.User.first_name} {this.state.User.last_name} </Text>
+      </View>
       <TextInput
               placeholder="Type New Post Here..."
               onChangeText={(text) => this.setState({text})}
@@ -757,29 +773,12 @@ class Profile extends Component  {
       
 
 
-      <Text>Friends List:</Text>
-      <FlatList
-              data={this.state.FriendList}
-              getChildrenName={(data) => 'item'}
-              renderItem={({item}) => 
-              (
-                  <ScrollView>
-                    <Button 
-                    title={item.user_givenname+" "+item.user_familyname}
-                    //onPress={ () => NavigationActions.push({ routeName: 'Profile', params: {id: item.user_id} })}
-                    //onPress={() => this.props.navigation.push('Profile')}
-                    //onPress={() => useNavigate('Profile')}
-                    //onPress={ () => this.props.navigate('Profile',{ id: String(item.user_id)}) }
-                   //\ onPress={this.props.navigation.replace('Profile', {id: String(item.user_id) }) }
-                   //onPress={() => NavigationActions.navigate({ routeName: 'profile', params: {id: itme.user_id} })}
-                   
+      <Text style={{fontWeight: 'bold',fontSize: 20}}>Friends List:</Text>
 
-                    />
-                    
+      <Button
+      title="Freinds List"
+      onPress={() => this.props.navigation.navigate('ProfileFriends',{ id: this.state.id})}
 
-                  </ScrollView>
-              )}
-              keyExtractor={(item,index) => item.user_id.toString()}
       />
  
  <Text>Posts:</Text>
@@ -799,35 +798,46 @@ class Profile extends Component  {
                       title={item.author.first_name+" "+item.author.last_name+"\n "+item.text+"\n Likes: "+(item.numLikes+"     "+this.DateGet(item.timestamp))}
                       onPress={ () => this.props.navigation.navigate('ViewPost',{items: item,id: this.state.id}) }
                       />
-                    {console.log(item.author.user_id)}
+                  
+                    
                     
                     {this.state.LoggedID == item.author.user_id &&
-                     <Button 
+                     
+                      <View style={{ flexDirection:"row" }}>
+                      <View>
+                      <Button 
                         title="Edit"
                         onPress={ () => this.props.navigation.navigate('Post',{item: item}) }
                         
                       />
-                    }
-                    
-                    {this.state.LoggedID == item.author.user_id &&
+                      </View>
+                      <View>
                       <Button 
                         title="Delete"
                         onPress={ () => this.DeletePost(item.post_id)}
                       />
+                      </View>
+                    </View>
                     }
 
+                     
+                      {this.state.LoggedID != item.author.user_id &&
+                       
 
-                      {this.state.LoggedID != item.author.user_id &&
-                      <Button
-                      title="Like" 
-                      onPress={() => {this.LikePost(item)}}
-                      />
-                      }
-                      {this.state.LoggedID != item.author.user_id &&
-                       <Button
-                      title="Remove Like" 
-                      onPress={() => {this.UnlikePost(item)}}
-                      />
+                      <View style={{ flexDirection:"row" }}>
+                        <View>
+                          <Button
+                          title="Like" 
+                          onPress={() => {this.LikePost(item)}}
+                          />
+                        </View>
+                        <View>
+                          <Button
+                          title="Remove Like" 
+                          onPress={() => {this.UnlikePost(item)}}
+                          />
+                        </View>
+                      </View>
                       }
 
                     </ScrollView>
@@ -837,6 +847,7 @@ class Profile extends Component  {
               </ScrollView>
         );
       }
+    }
     }
   }
 
