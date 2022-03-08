@@ -173,7 +173,7 @@ class ViewDrafts extends Component  {
 
     if(curText == "")
     {
-      return
+      return this.setState({TextError:"No Text , Cant Save Draft"})
     }
     else 
     {
@@ -188,8 +188,7 @@ class ViewDrafts extends Component  {
           this.setState({initialText})
 
           this.setState({fullDraft: list})
-          console.log(list[i].text)
-          console.log(list)
+          this.setState({TextError:"Draft Uploaded"})
           AsyncStorage.setItem('draftStore', JSON.stringify(list))
 
         }
@@ -257,6 +256,8 @@ class ViewDrafts extends Component  {
               title="Back"
               onPress={() => this.props.navigation.goBack()} 
               />
+
+            <Text>{this.state.TextError}</Text>
           
             <FlatList
               data={this.state.texts}
@@ -276,7 +277,6 @@ class ViewDrafts extends Component  {
               value={this.state.texts[index]}
               style={{padding:5, borderWidth:1, margin:5}}
             />
-            <Text>{this.state.TextError}</Text>
 
                     <Button
                     title="Save Edit To Storage"
@@ -314,6 +314,8 @@ class ViewDrafts extends Component  {
                   </ScrollView>
               )}
       />
+
+
         </View>
         );
               }

@@ -156,17 +156,6 @@ class Profile extends Component  {
           throw 'Something went wrong';
       }
   })
-  .then((responseJson) => {
-    console.log(responseJson)
-    
-    
-
-   
-    
-    //console.log(this.state.FriendList ,"freind list")
-    
-    
-  })
   .catch((error) => {
       console.log(error);
       
@@ -790,35 +779,43 @@ class Profile extends Component  {
                 
                 (
                   
-                    <ScrollView>
+                    <ScrollView  style={{borderWidth: 1,backgroundColor: "white"}}>
 
-                      
-                    <Text> </Text>
-                      <Button
-                      title={item.author.first_name+" "+item.author.last_name+"\n "+item.text+"\n Likes: "+(item.numLikes+"     "+this.DateGet(item.timestamp))}
-                      onPress={ () => this.props.navigation.navigate('ViewPost',{items: item,id: this.state.id}) }
-                      />
-                  
-                    
+                    <View style={{flexDirection:'row'}}>
+
+                    <Text>{item.author.first_name+" "+item.author.last_name}</Text>
+                    <Text>{this.DateGet(item.timestamp)}</Text>
+                       
                     
                     {this.state.LoggedID == item.author.user_id &&
                      
-                      <View style={{ flexDirection:"row" }}>
-                      <View>
-                      <Button 
-                        title="Edit"
-                        onPress={ () => this.props.navigation.navigate('Post',{item: item}) }
-                        
+                     <View style={{ flexDirection:"row", justifyContent: 'flex-end'}}>
+                     <View>
+                     <Button 
+                       title="Edit"
+                       onPress={ () => this.props.navigation.navigate('Post',{item: item}) }
+
+                       
+                     />
+                     </View>
+                     <View>
+                     <Button 
+                       title="Delete"
+                       onPress={ () => this.DeletePost(item.post_id)}
+                       color="#e60e0e"
+                     />
+                     
+                     </View>
+                   </View>
+                   }
+                   </View>
+                      <Button
+
+                      title={item.text+"\n Likes: "+item.numLikes}
+                      onPress={ () => this.props.navigation.navigate('ViewPost',{items: item,id: this.state.id}) }
                       />
-                      </View>
-                      <View>
-                      <Button 
-                        title="Delete"
-                        onPress={ () => this.DeletePost(item.post_id)}
-                      />
-                      </View>
-                    </View>
-                    }
+                  
+                 
 
                      
                       {this.state.LoggedID != item.author.user_id &&
