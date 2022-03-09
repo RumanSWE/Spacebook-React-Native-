@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import { View, Text , FlatList ,TextInput,Button,Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Style from './Style';
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 
 class Search extends Component  {
 
@@ -87,31 +89,39 @@ render() {
 
  
     return (
-      <View>
+      <ScrollView>
         <TextInput
               placeholder="Search"
               onChangeText={(search) => this.setState({search})}
               value={this.state.search}
-              style={{padding:5, borderWidth:1, margin:5}}
+              style={Style.inputBox}
         />
-         <Button
-            title="Search"
-            onPress={() => this.GetSearch()}
-        />
-        <Text>{this.state.text}</Text>
+        <TouchableOpacity
+        onPress={() => this.GetSearch()}
+        style={Style.searchBtn}
+        >
+          <Text style={Style.searchText}>Enter</Text>
+
+        </TouchableOpacity>
+        
+        <Text style={Style.errorText}>{this.state.text}</Text>
         <FlatList
               data={this.state.searchList}
               renderItem={({item}) => (
                   <View>
-                    <Button style={{ color:"red",padding:5, borderWidth:1, margin:5}} 
-                    title={item.user_givenname+" "+item.user_familyname}
-                    onPress={ () => this.props.navigation.navigate('Profile',{ id: String(item.user_id)}) }/>
+                    <TouchableOpacity
+                    onPress={ () => this.props.navigation.navigate('Profile',{ id: String(item.user_id)}) }
+                    style={Style.buttonStyleDefault}
+                    >
+                      <Text style={Style.buttonText}>{item.user_givenname+" "+item.user_familyname}</Text>
+                    </TouchableOpacity>
+                    
                      
                   </View>
               )}
               keyExtractor={(item,index) => item.user_id.toString()}
             />
-      </View>
+      </ScrollView>
       
     );
   }

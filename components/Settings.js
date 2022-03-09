@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { View, Text , FlatList ,Button,ScrollView,TextInput,Alert,TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Camera } from 'expo-camera';
+import Style from "./Style"
 
 class Settings extends Component  {
   constructor(props){
@@ -53,6 +54,8 @@ checkLoggedIn = async () =>
   logout = async () => {
     let token = await AsyncStorage.getItem('@session_token');
     await AsyncStorage.removeItem('@session_token');
+    await AsyncStorage.removeItem('@id');
+    //wasnt there before (@id remove)
     return fetch("http://localhost:3333/api/1.0.0/logout", {
         method: 'POST',
         headers: {
@@ -205,46 +208,55 @@ checkLoggedIn = async () =>
     
       <ScrollView>
         
-        <Button
-          title="logout"
-          onPress={() => this.logout()}
-        />
+        <TouchableOpacity
+        onPress={() => this.logout()}
+        style={Style.buttonStyleDefault}
+        >
+
+          <Text style={Style.buttonText}>Logout</Text>
+        </TouchableOpacity>
+        
         
         <TextInput
             placeholder="Enter your first name..."
             onChangeText={(first_name) => this.setState({first_name})}
             value={this.state.first_name}
-            style={{padding:5, borderWidth:1, margin:5}}
+            style={Style.inputBox}
         />
         <TextInput
             placeholder="Enter your last name..."
             onChangeText={(last_name) => this.setState({last_name})}
             value={this.state.last_name}
-            style={{padding:5, borderWidth:1, margin:5}}
+            style={Style.inputBox}
         />
         <TextInput
             placeholder="Enter your email..."
             onChangeText={(email) => this.setState({email})}
             value={this.state.email}
-            style={{padding:5, borderWidth:1, margin:5}}
+            style={Style.inputBox}
         />
         <TextInput
             placeholder="Enter your password..."
             onChangeText={(password) => this.setState({password})}
             value={this.state.password}
             secureTextEntry
-            style={{padding:5, borderWidth:1, margin:5}}
+            style={Style.inputBox}
         />
-        <Button
-            title="Update Information"
-            onPress={() => this.updateItem()}
-        />
+        <TouchableOpacity
+        onPress={() => this.updateItem()}
+        style={Style.buttonStyleDefault}
+        >
+          <Text  style={Style.buttonText}>Update Information</Text>
+        </TouchableOpacity>
 
-        <Button
-            title="Upload Photo"
-            onPress={ () => this.props.navigation.navigate('UploadPhoto')}
-        />
-        <Text>{this.state.TextError}</Text>
+        <TouchableOpacity
+        onPress={ () => this.props.navigation.navigate('UploadPhoto')}
+        style={Style.buttonStyleDefault}
+        >
+          <Text  style={Style.buttonText}>Upload Photo</Text>
+        </TouchableOpacity>
+         
+        <Text style={Style.errorText}>{this.state.TextError}</Text>
           </ScrollView>
       );
     }

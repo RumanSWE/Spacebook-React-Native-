@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import { ScrollView ,View ,Text ,FlatList, Button,TextInput} from 'react-native';
+import { ScrollView ,View ,Text ,FlatList, Button,TextInput,TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Style from './Style';
 
 //Add the ablity to show user profile of requested user and able to click on the name and link to there profile
 
@@ -93,21 +94,29 @@ class Post extends Component  {
       return(
         <View> 
           
-        <Button 
-        title="Back"
-        onPress={() => this.props.navigation.goBack()} 
-        />
+          <TouchableOpacity
+               onPress={() => this.props.navigation.goBack()} 
+               style={Style.searchBtn}
+              >
+                <Text style={Style.searchText}>Back</Text>
+                
+              </TouchableOpacity>
         
         <TextInput
               onChangeText={(text) => this.setState({text})}
               value={this.state.text}
-              style={{padding:5, borderWidth:1, margin:5}}
+              style={Style.inputBox}
         />
-        <Button
-        title="Save"
-        onPress={() => {this.SavePost()}}/>
+      
+              <TouchableOpacity
+               onPress={() => {this.SavePost()}}
+               style={Style.buttonStyleDefault}
+              >
+                <Text style={Style.buttonText}>Back</Text>
+                
+              </TouchableOpacity>
 
-        <Text>{this.state.errorText}</Text>
+        <Text style={Style.errorText}>{this.state.errorText}</Text>
 
           </View>
         

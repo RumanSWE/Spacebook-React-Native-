@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import { ScrollView ,View ,Text ,FlatList, Button,TextInput  } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import Style from './Style'
 
 
 //Add the ablity to show user profile of requested user and able to click on the name and link to there profile
@@ -232,10 +234,13 @@ class ViewDrafts extends Component  {
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-            <Button 
-              title="Back"
-              onPress={() => this.props.navigation.goBack()} 
-            />
+              <TouchableOpacity
+               onPress={() => this.props.navigation.goBack()} 
+               style={Style.searchBtn}
+              >
+                <Text style={Style.searchText}>Back</Text>
+                
+              </TouchableOpacity>
   
             <Text>Loading</Text>
 
@@ -246,16 +251,20 @@ class ViewDrafts extends Component  {
         );
       }else{
         return(
-        <View>
+        <ScrollView>
               
           
 
                
 
-              <Button 
-              title="Back"
-              onPress={() => this.props.navigation.goBack()} 
-              />
+              <TouchableOpacity
+               onPress={() => this.props.navigation.goBack()} 
+               style={Style.searchBtn}
+              >
+                <Text style={Style.searchText}>Back</Text>
+                
+              </TouchableOpacity>
+             
 
             <Text>{this.state.TextError}</Text>
           
@@ -275,48 +284,58 @@ class ViewDrafts extends Component  {
               this.setState({texts});
             }}
               value={this.state.texts[index]}
-              style={{padding:5, borderWidth:1, margin:5}}
+              style={Style.inputBox}
             />
 
-                    <Button
-                    title="Save Edit To Storage"
+                    <TouchableOpacity
                     onPress={() => {this.saveDraft(index)}}
-                    />
-                    
-                    <Button
-                    title="delete"
-                    onPress={() => {this.deleteDraft(index)}}
-                    />
+                    style={Style.buttonStyleDefault}
+                    >
+                      <Text style={Style.buttonText}>Save To Storage</Text>
+                    </TouchableOpacity>
 
-                    <Button
-                    title="Upload Now"
+                    <TouchableOpacity
                     onPress={() => {this.AddPost(index)}}
-                    />
+                    style={Style.buttonStyleDefault}
+                    >
+                      <Text style={Style.buttonText}>Upload Now</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                     onPress={() => {this.deleteDraft(index)}}
+                     style={Style.buttonStyleDefault}
+                    >
+                      <Text style={Style.buttonText}>Delete</Text>
+                    </TouchableOpacity>
+              
+                    
                     <TextInput 
                     placeholder='DD/MM/YYYY'
                     value={this.state.date}
                     onChangeText={(date) => this.setState({ date })}
-                    style={{padding:5, borderWidth:0.5, margin:5}}
+                    style={Style.inputBox}
                     
                     />
 
                     <TextInput 
                     placeholder='HH:MM'
                     onChange={this.state.time}
-                    style={{padding:5, borderWidth:0.5, margin:5}}
+                    style={Style.inputBox}
+                    />
                     
-                    />
-                    <Button
-                    title="Schedule Upload"
+                    <TouchableOpacity
                     onPress={() => this.setDate()}
-                    />
-
+                    style={Style.buttonStyleDefault}
+                    >
+                      <Text style={Style.buttonText}>Schedule Upload</Text>
+                    </TouchableOpacity>
+                
                   </ScrollView>
               )}
       />
 
 
-        </View>
+        </ScrollView>
         );
               }
     }

@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { View, Text , FlatList ,Button,ScrollView,TextInput,Alert,TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Camera } from 'expo-camera';
+import Style from './Style'
 
 class UploadPhoto extends Component  {
     constructor(props){
@@ -87,10 +88,13 @@ checkLoggedIn = async () =>
         return(
         <View> 
         
-        <Button
-            title="Back"
-            onPress={() => this.props.navigation.goBack()}
-        />
+             <TouchableOpacity
+               onPress={() => this.props.navigation.goBack()} 
+               style={Style.searchBtn}
+              >
+                <Text style={Style.searchText}>Back</Text>
+                
+              </TouchableOpacity>
 
 
 
@@ -133,7 +137,7 @@ checkLoggedIn = async () =>
   }else{
       return(
         <View>
-            <Text> No Permissons</Text>
+            <Text style={{textAlign: 'center',fontSize:20,fontWeight: '500'}}>No Permissons</Text>
         </View>
       );
       

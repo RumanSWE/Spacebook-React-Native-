@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import { ScrollView ,View ,Text ,FlatList, Button,TextInput} from 'react-native';
+import { ScrollView ,View ,Text ,FlatList, Button,TextInput,TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import Style from './Style'
 //Add the ablity to show user profile of requested user and able to click on the name and link to there profile
 
 class ViewPost extends Component  {
@@ -83,24 +83,31 @@ render(){
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-            <Button 
-              title="Back"
-              onPress={() => this.props.navigation.goBack()} 
-            />
+              <TouchableOpacity
+               onPress={() => this.props.navigation.goBack()} 
+               style={Style.searchBtn}
+              >
+                <Text style={Style.searchText}>Back</Text>
+                
+              </TouchableOpacity>
             <Text>Loading..</Text>
           </View>
         );
       }else{
     return(
         <View>
-            <Button 
-              title="Back"
-              onPress={() => this.props.navigation.goBack()} 
-            />
-            <Text>{this.state.post.author.first_name+" "+this.state.post.author.last_name}</Text>
-            <Text>{this.state.post.timestamp}</Text>
-            <Text>{this.state.post.text}</Text>
-            <Text>{this.state.post.numLikes} Likes</Text>
+              <TouchableOpacity
+               onPress={() => this.props.navigation.goBack()} 
+               style={Style.searchBtn}
+              >
+                <Text style={Style.searchText}>Back</Text>
+                
+              </TouchableOpacity>
+
+            <Text style={{textAlign:'center',fontWeight:'800',fontSize:20}}>{this.state.post.author.first_name+" "+this.state.post.author.last_name+"\n"+this.state.post.timestamp}</Text>
+            
+            <Text style={{textAlign:'center',fontWeight:'400',fontSize:15,paddingTop:20}}>{this.state.post.text}</Text>
+            <Text style={{textAlign:'left',paddingLeft: 30,fontWeight:'600'}}>{this.state.post.numLikes} Likes</Text>
             
         </View>
     );

@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import { ScrollView ,View ,Text ,FlatList, Button} from 'react-native';
+import { ScrollView ,View ,Text ,FlatList, Button,TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Style from './Style'
 
 
 class ProfileFriends extends Component  {
@@ -90,11 +91,16 @@ class ProfileFriends extends Component  {
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-                <Button
-            title="Back"
-            onPress={() => this.props.navigation.goBack()}
-        />
+              <TouchableOpacity
+               onPress={() => this.props.navigation.goBack()} 
+               style={Style.searchBtn}
+              >
+                <Text style={Style.searchText}>Back</Text>
+                
+              </TouchableOpacity>
+
             <Text>Loading..</Text>
+
           </View>
         );
       }else{
@@ -102,11 +108,15 @@ class ProfileFriends extends Component  {
     return(
     
         <View>
-            <Button
-            title="Back"
-            onPress={() => this.props.navigation.goBack()}
-        />
-             <Text>Friends List:</Text>
+              <TouchableOpacity
+               onPress={() => this.props.navigation.goBack()} 
+               style={Style.searchBtn}
+              >
+                <Text style={Style.searchText}>Back</Text>
+                
+              </TouchableOpacity>
+
+             <Text style={Style.titleText}>Friends List</Text>
              <FlatList
                 data={this.state.FriendList}
                 getChildrenName={(data) => 'item'}
@@ -114,9 +124,14 @@ class ProfileFriends extends Component  {
                 (
                     <ScrollView>
                       <Text></Text>
-                      <Button
-                      title={item.user_givenname+" "+item.user_familyname}
-                      onPress= { () => this.props.navigation.navigate('Profile',{id: item.user_id}) }/>
+                      <TouchableOpacity
+                      onPress= { () => this.props.navigation.navigate('Profile',{id: item.user_id}) }
+                      style={Style.buttonStyleDefault}
+                      >
+                        <Text style={Style.buttonText}>{item.user_givenname+" "+item.user_familyname}</Text>
+                        
+                      </TouchableOpacity>
+
                     </ScrollView>
                 )}
                 keyExtractor={(item,index) => item.user_id.toString()}

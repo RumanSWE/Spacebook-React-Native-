@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import { ScrollView ,View ,Text ,FlatList, Button} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import Style from './Style'
 
 //Add the ablity to show user profile of requested user and able to click on the name and link to there profile
 
@@ -197,7 +199,7 @@ class MyFreinds extends Component  {
     return(
     
         <View>
-          <Text>Freind Requests: </Text>
+          <Text style={Style.titleText}>Requests:</Text>
           <FlatList
                 data={this.state.ReqList}
                 renderItem={({item}) => 
@@ -205,27 +207,58 @@ class MyFreinds extends Component  {
                     <ScrollView>
                       
 
-                    <Button
-                    title={item.first_name+" "+item.last_name}
-                    onPress= { () => this.props.navigation.navigate('Profile',{ id: String(item.user_id)}) }
-                    />
+                      <TouchableOpacity
+                      onPress= { () => this.props.navigation.navigate('Profile',{ id: String(item.user_id)}) }
+                      style={Style.buttonStyleDefault}
+                      
+                      >
+                        <Text style={Style.buttonText}>{item.first_name+" "+item.last_name}</Text>
+                      </TouchableOpacity>
 
-                      <Button
-                      title="Accept"
-                      onPress={() => {this.AcceptReq(item.user_id)}}
-                      />
 
-                      <Button
-                      title="Decline"
-                      onPress={() => {this.DeclineReq(item.user_id)}}
-                      />
+                      <TouchableOpacity
+                       onPress={() => {this.AcceptReq(item.user_id)}}
+                       style={{
+                          borderRadius: 30,
+                          padding: 10,
+                          marginHorizontal: 15,
+                          backgroundColor:'green',
+                        }}>
+
+                        <Text style={{
+                          textAlign: 'center',
+                          color: 'white',
+                          fontWeight: 450
+                        }}>Accept</Text>
+
+                      </TouchableOpacity>
+
+                      
+                      <TouchableOpacity
+                       onPress={() => {this.DeclineReq(item.user_id)}}
+                       style={{
+                        borderRadius: 30,
+                        padding: 10,
+                        marginHorizontal: 15,
+                        marginTop: 5,
+                        marginBottom: 15,
+                        backgroundColor:'red',
+                      }}>
+                        <Text style={{
+                          textAlign: 'center',
+                          color: 'white',
+                          fontWeight: 450
+                      }}>Decline</Text>
+
+                      </TouchableOpacity>
+                  
 
                     </ScrollView>
                 )}
                 keyExtractor={(item,index) => item.user_id.toString()}
 
               />
-             <Text>Friends List:</Text>
+             <Text style={Style.titleText}>Friends List:</Text>
              <FlatList
                 data={this.state.FriendList}
                 getChildrenName={(data) => 'item'}
@@ -233,9 +266,13 @@ class MyFreinds extends Component  {
                 (
                     <ScrollView>
                       <Text></Text>
-                      <Button
-                      title={item.user_givenname+" "+item.user_familyname}
-                      onPress= { () => this.props.navigation.navigate('Profile',{ id: String(item.user_id)}) }/>
+                      <TouchableOpacity
+                      onPress= { () => this.props.navigation.navigate('Profile',{ id: String(item.user_id)}) }
+                      style={Style.buttonStyleDefault}
+                      >
+                        <Text style={Style.buttonText}>{item.user_givenname+" "+item.user_familyname}</Text>
+                      </TouchableOpacity>
+
                     </ScrollView>
                 )}
                 keyExtractor={(item,index) => item.user_id.toString()}

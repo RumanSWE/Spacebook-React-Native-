@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text , Button, ScrollView, TextInput ,Alert } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import Style from './Style'
 
 class SignUP extends Component{
   constructor(props){
@@ -61,35 +63,45 @@ render(){
                     placeholder="Enter your first name..."
                     onChangeText={(first_name) => this.setState({first_name})}
                     value={this.state.first_name}
-                    style={{padding:5, borderWidth:1, margin:5}}
+                    style={Style.inputBox}
                 />
                 <TextInput
                     placeholder="Enter your last name..."
                     onChangeText={(last_name) => this.setState({last_name})}
                     value={this.state.last_name}
-                    style={{padding:5, borderWidth:1, margin:5}}
+                    style={Style.inputBox}
                 />
                 <TextInput
                     placeholder="Enter your email..."
                     onChangeText={(email) => this.setState({email})}
                     value={this.state.email}
-                    style={{padding:5, borderWidth:1, margin:5}}
+                    style={Style.inputBox}
                 />
                 <TextInput
                     placeholder="Enter your password..."
                     onChangeText={(password) => this.setState({password})}
                     value={this.state.password}
                     secureTextEntry
-                    style={{padding:5, borderWidth:1, margin:5}}
+                    style={Style.inputBox}
                 />
-                <Button
-                    title="Create an account"
-                    onPress={() => this.signup()}
-                />
-                <Button
-                    title="Login"
-                    onPress={() => this.props.navigation.navigate("Login")}
-                    />
+                <TouchableOpacity
+                onPress={() => this.signup()}
+                style={Style.buttonStyleDefault}
+
+                >
+                    <Text style={Style.buttonText}>Create Account</Text>
+
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                onPress={() => this.props.navigation.navigate("Login")}
+                style={Style.buttonStyleDefault}
+
+                >
+                    <Text style={Style.buttonText}>Login</Text>
+
+                </TouchableOpacity>
+                
             </ScrollView>
 
   );}

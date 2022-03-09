@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text , StyleSheet,TextInput,Button , Alert} from 'react-native';
+import { View, Text , StyleSheet,TextInput,Button ,TouchableOpacity} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Style from './Style'
 
 class Login extends Component {
 
@@ -22,6 +23,7 @@ class Login extends Component {
       body: JSON.stringify(this.state)
   
     })
+
     .then((response) => 
     {
       if(response.status === 200)
@@ -48,7 +50,6 @@ class Login extends Component {
 
     .then(async (responseJson) => 
     {
-      console.log(responseJson);
       await AsyncStorage.multiSet([['@session_token',responseJson.token],['@id',String(responseJson.id)]]);
       
       
@@ -59,57 +60,41 @@ class Login extends Component {
     });
   }
 
-  
- 
-
 render(){
     return (
-
+      
       <View>
-        
+        {console.log("123456789098765432345678909876543234567890oiuytrewertyjkjhgfdxcvb")}
         <TextInput
-          style={styles.textInput}
+          style={Style.inputBox}
           onChangeText={value => this.setState({email: value})}
           value={this.state.email}
         />
   
         <TextInput
-          style={styles.textInput}
+          style={Style.inputBox}
           secureTextEntry={true}
           onChangeText={value => this.setState({password: value})}
           value={this.state.password}
         />
-  
-        <Button
-          style={styles.loginButton}
-          title="Login"
+        <TouchableOpacity
+          style={Style.buttonStyleDefault}
           onPress={() => {this.login()}}
-        />
+        > 
+        <Text style={Style.buttonText}>Login</Text>
+        </TouchableOpacity>
 
-        <Button
-          style={styles.loginButton}
-          title="Sign Up"
+        <TouchableOpacity
+          style={Style.buttonStyleDefault}
           onPress={() => this.props.navigation.navigate("SignUP")}
-        />
+        > 
+        <Text style={Style.buttonText}>Sign Up</Text>
+        </TouchableOpacity>
   
         </View>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  textInput: {
-    height: 40,
-    borderColor: 'lightgrey',
-    borderWidth: 10,
-    textAlign: 'center'
-  },
-  loginButton:{
-    height: 40,
-    borderWidth: 10,
-    textAlign: 'center'
-  }
-});
 
 
 export default Login;

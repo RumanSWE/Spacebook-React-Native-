@@ -135,18 +135,17 @@ class Profile extends Component  {
     })
     .then((response) => {
       if(response.status === 200){
-        console.log("200")
+     
         this.setState({
           Freinds: true,
           FriendList: responseJson
         })
        
       }else if(response.status === 401){
-        console.log("401")
         this.props.navigation.navigate("Login");
       }
       else if(response.status == 403){
-        console.log("403")
+        
         this.setState({
           Freinds: false
         })
@@ -517,7 +516,7 @@ class Profile extends Component  {
   LikePost = async(item)=>
   {
     const value = await AsyncStorage.getItem('@session_token');
-    const id = this.state.LoggedID;
+    const id = this.state.id;
     const post_id = item.post_id;
 
       return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/post/"+post_id+"/like", {
@@ -658,10 +657,20 @@ class Profile extends Component  {
 
     const diffDays = Math.ceil(diff / (1000 * 60 * 60 * 24)); 
 
-
     if (diffDays <= 1)
     {
-      return(Math.ceil(diff / (1000 * 60 * 60))+" Hours Ago");
+      let hours = (Math.ceil(diff / (1000 * 60 * 60)));
+
+      if(hours <= 1)
+      {
+        return (Math.ceil(diff / (1000 * 60)) +" Min Ago");
+      }
+      else
+      {
+        return(Math.ceil(diff / (1000 * 60 * 60))+" Hours Ago");
+      }
+
+     
     }
     else if (diffDays > 1)
     {
@@ -726,94 +735,115 @@ class Profile extends Component  {
         }}
 
       style={{ 
+        marginTop: 50,
+        marginBottom: 15,
         height: 100,
         width: 100,
         borderRadius: 50}}
       />
 
-      <Text style={{fontWeight: 'bold',fontSize: 25}}>{this.state.User.first_name} {this.state.User.last_name} </Text>
+      <Text style={Style.titleText}>{this.state.User.first_name} {this.state.User.last_name} </Text>
       </View>
       <TextInput
               placeholder="Type New Post Here..."
               onChangeText={(text) => this.setState({text})}
               value={this.state.text}
-              style={{padding:5, borderWidth:1, margin:5}}
+              style={Style.inputBox}
         />
-      <Text>{this.state.TextError}</Text>
-      <Button 
-        title="Add New Post"
-        onPress = {() => {this.AddPost()}}
-      />
+      <Text style={Style.errorText}>{this.state.TextError}</Text>
 
-      {this.state.id == this.state.LoggedID &&  
-      <Button
-      title="Save Draft"
-      onPress={() => {this.SaveDraft()}}
-      />
-      }
-      
-      {this.state.id == this.state.LoggedID &&  
-      <Button
-      title="View Drafts"
+    <View style={{flexDirection:'row', justifyContent: 'space-between',padding:15}}>
+
+      <TouchableOpacity
+      onPress = {() => {this.AddPost()}}
+      style={Style.homeButton}
+      >
+        <Text style={{color:'white'}}>Upload Post</Text>
+      </TouchableOpacity>
+
+      {this.state.id == this.state.LoggedID && 
+
+      <TouchableOpacity
+       onPress={() => {this.SaveDraft()}}
+       style={Style.homeButton}
+      >
+        <Text style={Style.buttonText}>Save Draft</Text>
+      </TouchableOpacity>
+    }
+    {this.state.id == this.state.LoggedID && 
+
+      <TouchableOpacity
       onPress={ () => this.props.navigation.navigate('ViewDrafts') }
-      />
+      style={Style.homeButton}
+      >
+        <Text style={Style.buttonText}>View Drafts</Text>
+      </TouchableOpacity>
+
       }
-      
-      
+      </View>
 
-
-      <Text style={{fontWeight: 'bold',fontSize: 20}}>Friends List:</Text>
-
-      <Button
-      title="Freinds List"
+      <TouchableOpacity
       onPress={() => this.props.navigation.navigate('ProfileFriends',{ id: this.state.id})}
+      style={Style.buttonStyleDefault}
+      >
+        <Text style={Style.buttonText}>View Freinds List</Text>
 
-      />
+      </TouchableOpacity>
  
- <Text>Posts:</Text>
       <FlatList
-      
+                //horizontal={true}
+                contentContainerStyle={{
+                  paddingLeft: 15,
+                  paddingRight: 15, // THIS DOESN'T SEEM TO BE WORKING
+                  marginBottom: 20,
+                  
+        
+            
+                }}
+                
                 data={this.state.Posts}
                 
                 renderItem={({item}) => 
                 
                 (
                   
-                    <ScrollView  style={{borderWidth: 1,backgroundColor: "white"}}>
+                    <ScrollView  style={{backgroundColor: "white",borderRadius: 15,marginTop:20}}>
 
-                    <View style={{flexDirection:'row'}}>
+                    <View style={{flexDirection:'row', justifyContent: 'space-between',paddingTop:20}}>
 
-                    <Text>{item.author.first_name+" "+item.author.last_name}</Text>
-                    <Text>{this.DateGet(item.timestamp)}</Text>
+                    <Text style={{color: "grey",fontWeight: 'bold',fontSize: 15,paddingLeft: 10}}>{item.author.first_name+" "+item.author.last_name+"\n"+(this.DateGet(item.timestamp))}</Text>
                        
                     
                     {this.state.LoggedID == item.author.user_id &&
                      
                      <View style={{ flexDirection:"row", justifyContent: 'flex-end'}}>
                      <View>
-                     <Button 
-                       title="Edit"
-                       onPress={ () => this.props.navigation.navigate('Post',{item: item}) }
+                     <TouchableOpacity 
+                     style={{backgroundColor: "white" }}
+                     onPress={ () => this.props.navigation.navigate('Post',{item: item}) }
+                     >
 
-                       
-                     />
+                         <Text style={{color:'black',fontWeight:'700',paddingRight:20,paddingLeft:20}}>Edit</Text>
+                    </TouchableOpacity>
+
                      </View>
                      <View>
-                     <Button 
-                       title="Delete"
-                       onPress={ () => this.DeletePost(item.post_id)}
-                       color="#e60e0e"
-                     />
+                     <TouchableOpacity style={{backgroundColor: "white" }}  
+                     onPress={ () => this.DeletePost(item.post_id)}
+                     >
+                      <Text style={{color:'red',fontWeight:'700',paddingRight:20}}>Delete</Text>
+                       </TouchableOpacity>
                      
                      </View>
                    </View>
                    }
                    </View>
-                      <Button
-
-                      title={item.text+"\n Likes: "+item.numLikes}
-                      onPress={ () => this.props.navigation.navigate('ViewPost',{items: item,id: this.state.id}) }
-                      />
+                   <TouchableOpacity style={{backgroundColor: "white" }} 
+                    onPress={ () => this.props.navigation.navigate('ViewPost',{items: item,id: this.state.id}) }
+                    >
+                      <Text style={{color: "black",paddingLeft:20,paddingRight:20,paddingBottom:20,paddingTop:20}}>{item.text}</Text>
+ 
+                    </TouchableOpacity>
                   
                  
 
@@ -823,16 +853,24 @@ class Profile extends Component  {
 
                       <View style={{ flexDirection:"row" }}>
                         <View>
-                          <Button
-                          title="Like" 
+
+                        <TouchableOpacity style={{backgroundColor: "white" }} 
+                           
                           onPress={() => {this.LikePost(item)}}
-                          />
+                          >
+                            <Text style={{color: "green",paddingLeft:20,paddingRight:20,paddingBottom:20,paddingTop:20}}>Like {item.numLikes}</Text>
+                             </TouchableOpacity>
+
                         </View>
                         <View>
-                          <Button
+
+                          <TouchableOpacity style={{backgroundColor: "white" }} 
                           title="Remove Like" 
                           onPress={() => {this.UnlikePost(item)}}
-                          />
+                          >
+                            <Text style={{color: "red",paddingLeft:20,paddingRight:20,paddingBottom:20,paddingTop:20}} >Remove Like</Text>
+                             </TouchableOpacity>
+
                         </View>
                       </View>
                       }
