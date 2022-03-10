@@ -12,7 +12,8 @@ class SignUP extends Component{
         first_name: "",
         last_name: "",
         email: "",
-        password: ""
+        password: "",
+        errorTxt: "",
     }
   } 
   signup = () => {
@@ -27,27 +28,21 @@ class SignUP extends Component{
     })
     .then((response) => {
         if(response.status === 201){
-            return response.json()
+            this.props.navigation.navigate("Login");
         }else if(response.status === 400)
         {
-            Alert.alert(
-                "Failed Validation",
-                "Invalid email/password supplied");   
+            console.log("hlleoe")
+            this.setState({errorTxt:"Invalid Or Missng Information"})
         }
         else if(response.status == 500)
         {
-            Alert.alert(
-                "Server Error",
-                "Server not responding");   
+            this.setState({errorTxt:"Server Not Responding"})  
         }
         else
         {
+            this.setState({errorTxt:"Something went wrong"})
             throw 'Something went wrong';
         }
-    })
-    .then((responseJson) => {
-           console.log("User created with ID: ", responseJson);
-           this.props.navigation.navigate("Login");
     })
     .catch((error) => {
         alert(error)
@@ -96,6 +91,7 @@ render(){
                     secureTextEntry
                     style={Style.inputBox}
                 />
+                <Text style={Style.errorText}>{this.state.errorTxt}</Text>
                 <TouchableOpacity
                 onPress={() => this.signup()}
                 style={Style.buttonStyleDefault}

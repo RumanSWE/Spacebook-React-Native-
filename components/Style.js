@@ -84,6 +84,30 @@ errorText:
   fontWeight:'700',
   color: 'red'
 },
+AcceptButton:{  
+  borderRadius: 30,
+  padding: 10,
+  marginHorizontal: 15,
+  backgroundColor:'green'
+},
+AcceptText:{
+  textAlign: 'center',
+  color: 'white',
+  fontWeight: 450
+},
+DeclineButton:{
+  borderRadius: 30,
+  padding: 10,
+  marginHorizontal: 15,
+  marginTop: 5,
+  marginBottom: 15,
+  backgroundColor:'red',
+},
+DeclineText:{ 
+  textAlign: 'center',
+  color: 'white',
+  fontWeight: 450
+}
 
 
 });

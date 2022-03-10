@@ -48,10 +48,8 @@ checkLoggedIn = async () =>
   {
       this.props.navigation.navigate('Login');
   }
-};
-
-
-  logout = async () => {
+}
+logout = async () => {
     let token = await AsyncStorage.getItem('@session_token');
     await AsyncStorage.removeItem('@session_token');
     await AsyncStorage.removeItem('@id');
@@ -66,9 +64,7 @@ checkLoggedIn = async () =>
         if(response.status === 200){
             this.props.navigation.navigate("Login");
         }else if(response.status === 401){
-          Alert.alert(
-            "Failed To Logout",
-            "This action isnt authorised");   
+          this.setState({TextError:"Failed To Logout"})  
         }else{
             throw 'Something went wrong';
         }
@@ -77,9 +73,8 @@ checkLoggedIn = async () =>
         console.log(error);
         //ToastAndroid.show(error, ToastAndroid.SHORT);
     })
-  }
- 
-  GetUser = async() =>{
+}
+GetUser = async() =>{
 
     const value = await AsyncStorage.getItem('@session_token');
     
@@ -116,11 +111,8 @@ checkLoggedIn = async () =>
         console.log(error);
         
     })
-  }
-  
-  
-  
-  updateItem = async() =>{
+}
+updateItem = async() =>{
     
     const value = await AsyncStorage.getItem('@session_token');
     const id = await AsyncStorage.getItem('@id');

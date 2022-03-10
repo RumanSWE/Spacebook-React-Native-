@@ -15,6 +15,7 @@ class MyFreinds extends Component  {
       isLoading: true,
       ReqList: [],
       FriendList: [],
+      errorTxt: "",
     }
   }
   componentDidMount() 
@@ -45,7 +46,6 @@ class MyFreinds extends Component  {
         this.props.navigation.navigate('Login');
     }
   };
-
   AcceptReq = async(id) =>{
     
     const value = await AsyncStorage.getItem('@session_token');
@@ -77,7 +77,6 @@ class MyFreinds extends Component  {
         
     })
   }
-
   DeclineReq = async(id) =>{
     
     const value = await AsyncStorage.getItem('@session_token');
@@ -110,7 +109,6 @@ class MyFreinds extends Component  {
     })
   
   }
-
   getFriendList = async () => {
     
     const value = await AsyncStorage.getItem('@session_token');
@@ -144,9 +142,6 @@ class MyFreinds extends Component  {
       
   })
   }
-
-
-
   getReqList = async () => {
     const value = await AsyncStorage.getItem('@session_token');
     
@@ -218,37 +213,17 @@ class MyFreinds extends Component  {
 
                       <TouchableOpacity
                        onPress={() => {this.AcceptReq(item.user_id)}}
-                       style={{
-                          borderRadius: 30,
-                          padding: 10,
-                          marginHorizontal: 15,
-                          backgroundColor:'green',
-                        }}>
+                       style={Style.AcceptButton}>
 
-                        <Text style={{
-                          textAlign: 'center',
-                          color: 'white',
-                          fontWeight: 450
-                        }}>Accept</Text>
+                        <Text style={Style.AcceptText}>Accept</Text>
 
                       </TouchableOpacity>
 
                       
                       <TouchableOpacity
                        onPress={() => {this.DeclineReq(item.user_id)}}
-                       style={{
-                        borderRadius: 30,
-                        padding: 10,
-                        marginHorizontal: 15,
-                        marginTop: 5,
-                        marginBottom: 15,
-                        backgroundColor:'red',
-                      }}>
-                        <Text style={{
-                          textAlign: 'center',
-                          color: 'white',
-                          fontWeight: 450
-                      }}>Decline</Text>
+                       style={Style.DeclineButton}>
+                        <Text style={Style.DeclineText}>Decline</Text>
 
                       </TouchableOpacity>
                   

@@ -3,6 +3,9 @@ import { ScrollView ,View ,Text ,FlatList, Button,TextInput  } from 'react-nativ
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Style from './Style'
+//import BackgroundTimer from 'react-native-background-timer';
+
+
 
 
 //Add the ablity to show user profile of requested user and able to click on the name and link to there profile
@@ -13,8 +16,6 @@ class ViewDrafts extends Component  {
 
   
   constructor(props){
-    
-
     super(props);
     this.state =
     { 
@@ -28,7 +29,7 @@ class ViewDrafts extends Component  {
 
     }
   }
-
+ 
   
   async componentDidMount() 
   {
@@ -36,8 +37,6 @@ class ViewDrafts extends Component  {
     {
       this.checkLoggedIn();
       this.getDrafts()
-      
-    
     });
     
   }
@@ -46,6 +45,7 @@ class ViewDrafts extends Component  {
   {
     this.unsubscribe();
   }
+
 
   checkLoggedIn = async () => 
   {

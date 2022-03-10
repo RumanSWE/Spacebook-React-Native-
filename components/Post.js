@@ -11,14 +11,20 @@ class Post extends Component  {
     super(props);
     this.state =
     { 
-      text: this.props.route.params.item.text,
+      text: "",
       errorText: "",
+      post_id: "",
+      id: "",
     }
   }
   async componentDidMount() 
   {
     this.unsubscribe = this.props.navigation.addListener('focus', () => 
     {
+      
+      this.setState({text: this.props.route.params.item.text}) 
+      this.setState({post_id: this.props.route.params.item.post_id })
+      this.setState({id: this.props.route.params.id })
       this.checkLoggedIn();
      
       
@@ -46,10 +52,10 @@ class Post extends Component  {
  
 
   const value = await AsyncStorage.getItem('@session_token');
-  const id = await AsyncStorage.getItem('@id');
 
- 
-  const post_id = this.props.route.params.item.post_id;
+  
+  const id = this.state.id
+  const post_id = this.state.post_id
   
   const Text = String(this.state.text);
   console.log(Text)
@@ -67,6 +73,7 @@ class Post extends Component  {
   })
   .then((response) => {
     if(response.status === 200){
+        this.setState({errorText:"Changes Saved To Post"})
         return response.json()
     }else if(response.status === 401){
       return response.json()
@@ -112,7 +119,7 @@ class Post extends Component  {
                onPress={() => {this.SavePost()}}
                style={Style.buttonStyleDefault}
               >
-                <Text style={Style.buttonText}>Back</Text>
+                <Text style={Style.buttonText}>Save Changes</Text>
                 
               </TouchableOpacity>
 

@@ -28,20 +28,38 @@ class Profile extends Component  {
     }
   }
 
+
   async componentDidMount() 
   {
-    this.setState({Posts: []})
-    this.setState({Freinds: null})
+   
+
+
+  
     
     this.unsubscribe = this.props.navigation.addListener('focus', () => 
     {
+
+
+      try
+      {      
+      this.setState({isLoading: true})
+      this.setState({Posts: []})
+      this.setState({Freinds: null})
+      this.setState({Type: ""})
+      }
+      catch(e)
+      {console.log(e)}
+
       this.checkLoggedIn();
       this.userCheck();
+
+
       
     }); 
   }
-  componentWillUnmount() 
+  async componentWillUnmount() 
   {
+    console.log("---will mont------")
     this.unsubscribe();
   }
   checkLoggedIn = async () => 
@@ -57,8 +75,6 @@ class Profile extends Component  {
   }
   userCheck= async() =>
   {
-    //this.setState({Freinds: false})
-    
 
     let my_id = await AsyncStorage.getItem('@id');
     this.setState({LoggedID: my_id})
@@ -66,7 +82,7 @@ class Profile extends Component  {
     try 
     {
       const id = this.props.route.params.id;
-      console.log("someone elses profile")
+      console.log("someone elses profile (IGNORE)")
       this.setState({id: id})
 
       this.getFriendList();
@@ -77,7 +93,7 @@ class Profile extends Component  {
     } 
     catch (error) 
     {
-      console.log("this is my own profile");
+      console.log("this is my own profile (IGNORE)");
       this.setState({Freinds: true})
       
       
@@ -91,6 +107,7 @@ class Profile extends Component  {
     }
   }
   getUser= async () => {
+    console.log("get user")
 
     let id = this.state.id;
 
@@ -129,7 +146,7 @@ class Profile extends Component  {
     
     let value = await AsyncStorage.getItem('@session_token');
 
-    console.log("Freindlist")
+    console.log("getFreindlist")
     
     return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/friends", {
       'headers': {
@@ -137,21 +154,26 @@ class Profile extends Component  {
       }
     })
     .then((response) => {
+      //console.log(response.json())
       if(response.status === 200){
      
         this.setState({
           Freinds: true,
-          FriendList: responseJson
+          FriendList: response.json()
         })
        
       }else if(response.status === 401){
         this.props.navigation.navigate("Login");
       }
       else if(response.status == 403){
+
+        console.log("not freinds")
         
         this.setState({
-          Freinds: false
+          Freinds: false,
+          isLoading: false
         })
+        console.log("get freinds list")
         this.FreindStatus();
 
       }else{
@@ -165,6 +187,7 @@ class Profile extends Component  {
   }
   FreindStatus= async() =>
   {
+    console.log("freindStatus")
     const id = this.state.id;
     
     const value = await AsyncStorage.getItem('@session_token');
@@ -220,6 +243,7 @@ class Profile extends Component  {
   })
   }
   addFreind = async() =>{
+    console.log("addFreind")
   
   let id = this.state.id;
   let value = await AsyncStorage.getItem('@session_token');
@@ -233,6 +257,7 @@ class Profile extends Component  {
   .then((response) => {
     if(response.status === 200){
       this.setState({falseText: "Freind Request Sent!"})
+        console.log("add Freind")
         this.FreindStatus;
     }else if(response.status === 401){
       return response.json()
@@ -257,7 +282,7 @@ class Profile extends Component  {
   }
   FreindButtonStatus= (data) =>
 {
-  console.log(data)
+
   
 
   data = String(data);
@@ -266,10 +291,14 @@ class Profile extends Component  {
   {
     return(
       <View>
-        <Button 
-        title = "Add Freind"
+
+        <TouchableOpacity
         onPress={ () => this.addFreind() } 
-        />
+        style={Style.buttonStyleDefault}
+        >
+        <Text style={Style.buttonText}>Add Freind</Text>
+        </TouchableOpacity>
+
         <Text>{this.state.falseText}</Text>
       </View>
   );
@@ -279,17 +308,22 @@ class Profile extends Component  {
   {
     return (
       <View>
-      <Button 
-        title = "Accept"
-        onPress={ () => this.AcceptReq() }
+        <TouchableOpacity
+         onPress={ () => this.AcceptReq() }
+         style={Style.AcceptButton}
+        >
+          <Text style={Style.AcceptText}>Accept</Text>
+        </TouchableOpacity>
 
-      />
-      <Button 
-        title = "Decline"
+        <TouchableOpacity
         onPress={ () => this.DeclineReq() }
-        
-        
-      />
+        style={Style.DeclineButton}
+
+        >
+          <Text style={Style.DeclineText}>Decline</Text>
+        </TouchableOpacity>
+
+      
       </View>
       );
     }
@@ -307,20 +341,25 @@ class Profile extends Component  {
     })
     .then((response) => {
       if(response.status === 200){
-        window.location.reload(false);
+
+        this.getFriendList();
+        this.forceUpdate();
+          
           return response.json()
       }else if(response.status === 401){
+        this.getFriendList();
+        this.forceUpdate();
+        
         return response.json()
       }else{
           throw 'Something went wrong';
       }
     })
     .then((responseJson) => {
+      this.getFriendList();
+      this.forceUpdate();
       
-      console.log(responseJson);
-      this.setState({Type: ""})
-      this.setState({Freinds: true})
-      this.userCheck();
+      
       
       })
       
@@ -343,17 +382,19 @@ class Profile extends Component  {
     })
     .then((response) => {
       if(response.status === 200){
-          return response.json()
+        this.getFriendList();
+        this.forceUpdate();
       }else if(response.status === 401){
+        this.getFriendList();
+        this.forceUpdate();
         return response.json()
       }else{
           throw 'Something went wrong';
       }
     })
     .then((responseJson) => {
-      console.log(responseJson);
-      this.setState({Type: "add"})
-      this.userCheck();
+      this.getFriendList();
+        this.forceUpdate();
       })
 
       
@@ -369,8 +410,7 @@ class Profile extends Component  {
     console.log("Load posts")
     
     let id = this.state.id
-    console.log("herewijdijidjiajdi",id)
-
+  
     const value = await AsyncStorage.getItem('@session_token');
 
     return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/post", {
@@ -394,20 +434,20 @@ class Profile extends Component  {
     })
     .then((responseJson) => {
       
-      console.log(responseJson,"all post resposnes!!!!!!!!!!!")
       if(responseJson == "" )
       {
-        console.log("goodbye")
+        
         this.setState({
           Posts: [],
           isLoading: false
         })
+       
         
         this.setState({TextError: "No Posts Available"})
       }
       else if(responseJson != "")
       {
-        console.log("hello??")
+
         this.setState({
           Posts: responseJson,
           isLoading: false
@@ -426,7 +466,7 @@ class Profile extends Component  {
   {
     console.log("DELETING")
     const value = await AsyncStorage.getItem('@session_token');
-    const id = this.state.LoggedID;
+    const id = this.state.id;
     
     return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/post/"+Post_id, {
       method: 'DELETE',
@@ -435,23 +475,11 @@ class Profile extends Component  {
       }
     })
     .then((response) => {
-      if(response.status === 200){
-          //setRefreshing(true);
-          //wait(2000).then(() => setRefreshing(false));
-          for (let i = 0; i < this.state.Posts.length; i++) {
-            if(this.state.Posts[i].post_id == Post_id)
-            {
-              //this.setState({Posts: }) = 
-              //console.log(this.state.Posts) 
-              let delPosts = this.state.Posts.slice(0, i).concat(this.state.Posts.slice(i + 1,  this.state.Posts.length))
-              this.setState({Posts: delPosts})
-            }
-            
-          }
-         
-          
-          
-      }else if(response.status === 401){
+      if(response.status === 200)
+      {
+        this.loadPosts()
+      }
+      else if(response.status === 401){
         return response.json()
       }else{
           throw 'Something went wrong';
@@ -472,6 +500,7 @@ class Profile extends Component  {
   }
   AddPost = async()=>
   {
+    console.log("AddPost")
     const value = await AsyncStorage.getItem('@session_token');
     const id = this.state.id;
 
@@ -495,10 +524,10 @@ class Profile extends Component  {
         return response.json()
       }
       else if(response.status === 201){
-        this.setState({text: ""})
+        this.setState({falseText: "Post Uploaded!"})
         this.loadPosts();
         
-        Alert.alert("Post Uploaded")
+        
 
       }else{
         
@@ -685,6 +714,8 @@ class Profile extends Component  {
       return(postDate.toLocaleDateString('en-GB'))
     }
   }
+  
+  
 
   render(){
   
@@ -716,7 +747,7 @@ class Profile extends Component  {
             borderRadius: 50}}
           />
 
-        <Text style={{ }}>{this.state.User.first_name} {this.state.User.last_name} </Text>
+        <Text style={Style.titleText}>{this.state.User.first_name} {this.state.User.last_name} </Text>
 
           <Text>{this.FreindButtonStatus(this.state.Type)}</Text>
           
@@ -813,6 +844,7 @@ class Profile extends Component  {
                     <ScrollView  style={{backgroundColor: "white",borderRadius: 15,marginTop:20}}>
 
                     <View style={{flexDirection:'row', justifyContent: 'space-between',paddingTop:20}}>
+        
 
                     <Text style={{color: "grey",fontWeight: 'bold',fontSize: 15,paddingLeft: 10}}>{item.author.first_name+" "+item.author.last_name+"\n"+(this.DateGet(item.timestamp))}</Text>
                        
@@ -823,7 +855,7 @@ class Profile extends Component  {
                      <View>
                      <TouchableOpacity 
                      style={{backgroundColor: "white" }}
-                     onPress={ () => this.props.navigation.navigate('Post',{item: item}) }
+                     onPress={ () => this.props.navigation.navigate('Post',{item: item,id: this.state.id}) }
                      >
 
                          <Text style={{color:'black',fontWeight:'700',paddingRight:20,paddingLeft:20}}>Edit</Text>

@@ -6,14 +6,14 @@ import Style from './Style'
 import logo from './logo.png'
 
 class Login extends Component {
-
   constructor(props){
     super(props);
 
 
   this.state= {
     email:"",
-    password:""
+    password:"",
+    errorTxt: ""
     }
   }
   login = async() =>{
@@ -22,7 +22,6 @@ class Login extends Component {
       method: 'POST',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(this.state)
-  
     })
 
     .then((response) => 
@@ -33,18 +32,16 @@ class Login extends Component {
         }
       else if(response.status === 400)
         {
-          Alert.alert(
-            "Failed Validation",
-            "Invalid email/password supplied");   
+          this.setState({errorTxt:"Invalid Email or Password"}) 
+          //used display the resposnes from the server
         }
         else if(response.status == 500)
         {
-          Alert.alert(
-            "Serer Error",
-            "Server stopped responding");   
+          this.setState({errorTxt:"Server Not Eesponding"})  
         }
       else
         {
+          this.setState({errorTxt:"Something went wrong"}) 
           throw 'Something went wrong';
         }
     })
@@ -52,7 +49,9 @@ class Login extends Component {
     .then(async (responseJson) => 
     {
       await AsyncStorage.multiSet([['@session_token',responseJson.token],['@id',String(responseJson.id)]]);
+      //multi-set this way two keys can be set at once
       this.props.navigation.navigate('Homes', { screen: 'Profile' });
+      //navigate to the nested stack which contains the app
     })
     .catch((error) => {
       console.error(error);
@@ -62,55 +61,55 @@ class Login extends Component {
 render(){
     return (
 
-     
-       
-      
       <View style={{   
         justifyContent: 'center',
-      alignItems: 'center',
-      marginTop:100}} >
+        alignItems: 'center',
+        marginTop:100
+        }}>
 
         
-      <Image 
-      style={{height:200,width:200}}
-      source={logo}
-      /> 
-      
-        
-      <View style={Style.welcome}>
-        
-      
-        
-
-        <TextInput
-          style={Style.inputBox}
-          onChangeText={value => this.setState({email: value})}
-          value={this.state.email}
+        <Image 
+        style={{height:200,width:200}}
+        source={logo}
         />
-  
-        <TextInput
-          style={Style.inputBox}
-          secureTextEntry={true}
-          onChangeText={value => this.setState({password: value})}
-          value={this.state.password}
-        />
-        <TouchableOpacity
-          style={Style.buttonStyleDefault}
-          onPress={() => {this.login()}}
-        > 
-        <Text style={Style.buttonText}>Login</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={Style.buttonStyleDefault}
-          onPress={() => this.props.navigation.navigate("SignUP")}
-        > 
-        <Text style={Style.buttonText}>Sign Up</Text>
-        </TouchableOpacity>
-  
-        </View>
-        </View>
         
+          <View style={Style.welcome}>
+            
+
+            <TextInput
+              style={Style.inputBox}
+              onChangeText={value => this.setState({email: value})}
+              value={this.state.email}
+            />
+      
+            <TextInput
+              style={Style.inputBox}
+              secureTextEntry={true}
+              onChangeText={value => this.setState({password: value})}
+              value={this.state.password}
+            />
+
+            <Text style={Style.errorText}>{this.state.errorTxt}</Text>
+
+            <TouchableOpacity
+              style={Style.buttonStyleDefault}
+              onPress={() => {this.login()}}
+            > 
+            <Text style={Style.buttonText}>Login</Text>
+
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={Style.buttonStyleDefault}
+              onPress={() => this.props.navigation.navigate("SignUP")}
+            > 
+            <Text style={Style.buttonText}>Sign Up</Text>
+            
+            </TouchableOpacity>
+    
+          </View>
+
+        </View>
     );
   }
 }

@@ -32,7 +32,7 @@ class App extends Component {
   {
     return(
     <Tab.Navigator 
-    initialRouteName="Login"
+    initialRouteName="Profile"
     
     
     screenOptions={({ route }) => ({
