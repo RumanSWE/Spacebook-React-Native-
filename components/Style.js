@@ -15,7 +15,9 @@ export default StyleSheet.create({
   },
 welcome: 
   {
-    textAlign: 'center'
+    justifyContent:'center',
+    flex: 1,
+    
   },
 centerText:{
     flex: 1,
@@ -81,6 +83,7 @@ errorText:
   textAlign:'center',
   fontWeight:'700',
   color: 'red'
-}
+},
+
 
 });

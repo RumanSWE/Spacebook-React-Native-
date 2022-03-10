@@ -31,7 +31,10 @@ class App extends Component {
   Homes = () => 
   {
     return(
-    <Tab.Navigator screenOptions={{headerShown: false}}
+    <Tab.Navigator 
+    initialRouteName="Login"
+    
+    
     screenOptions={({ route }) => ({
       tabBarButton: [
         "Post",
@@ -47,16 +50,16 @@ class App extends Component {
         : undefined,
 
     })}>  
-      <Tab.Screen name="Profile" component={Profile} listeners={({ navigation, route }) => ({
+      <Tab.Screen name="Profile" component={Profile}  options={{headerShown: false}} listeners={({ navigation, route }) => ({
     tabPress: e => {
       // Prevent default action
       e.preventDefault();
 
       navigation.navigate('Profile')
     },})}/>
-      <Tab.Screen name="Settings" component={Settings} />
-      <Tab.Screen name="Freinds" component={MyFreinds} />
-      <Tab.Screen name="Search" component={Search} />
+      <Tab.Screen name="Settings" component={Settings} options={{headerShown: false}} />
+      <Tab.Screen name="Freinds" component={MyFreinds} options={{headerShown: false}}/>
+      <Tab.Screen name="Search" component={Search}  options={{headerShown: false}}/>
 
       <Tab.Screen name="UploadPhoto" component={UploadPhoto} />
       <Tab.Screen name="Post" component={Post} />
@@ -77,10 +80,12 @@ render(){
 
  return (
     <NavigationContainer>
-    <Tab.Navigator  screenOptions={{headerShown: false}}>
-      <Tab.Screen name="Homes" component={this.Homes} options={{tabBarStyle: { display: "none" } }} />
-      <Tab.Screen name="Login" component={Login} options={{tabBarStyle: { display: "none" } }}/>
-      <Tab.Screen name="SignUP" component={SignUP}  options={{tabBarStyle: { display: "none" } }}/>
+    <Tab.Navigator 
+    initialRouteName="Login"
+    options={{headerShown: false}}>
+      <Tab.Screen name="Homes" component={this.Homes} options={{tabBarStyle: { display: "none" },headerShown: false}} />
+      <Tab.Screen name="Login" component={Login} options={{tabBarStyle: { display: "none" },headerShown: false }}/>
+      <Tab.Screen name="SignUP" component={SignUP}  options={{tabBarStyle: { display: "none" },headerShown: false }}/>
     </Tab.Navigator>
     </NavigationContainer>
  );    

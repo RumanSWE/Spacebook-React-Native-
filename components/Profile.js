@@ -30,6 +30,9 @@ class Profile extends Component  {
 
   async componentDidMount() 
   {
+    this.setState({Posts: []})
+    this.setState({Freinds: null})
+    
     this.unsubscribe = this.props.navigation.addListener('focus', () => 
     {
       this.checkLoggedIn();
@@ -55,7 +58,7 @@ class Profile extends Component  {
   userCheck= async() =>
   {
     //this.setState({Freinds: false})
-    this.setState({Posts: []})
+    
 
     let my_id = await AsyncStorage.getItem('@id');
     this.setState({LoggedID: my_id})
@@ -400,7 +403,7 @@ class Profile extends Component  {
           isLoading: false
         })
         
-        this.setState({TextError: "No Posts On Your Profile"})
+        this.setState({TextError: "No Posts Available"})
       }
       else if(responseJson != "")
       {

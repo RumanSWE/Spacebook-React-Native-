@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { View, Text , StyleSheet,TextInput,Button ,TouchableOpacity} from 'react-native';
+import { View, Text , StyleSheet,TextInput,Button ,TouchableOpacity,Image} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Style from './Style'
+import logo from './logo.png'
 
 class Login extends Component {
 
@@ -51,9 +52,7 @@ class Login extends Component {
     .then(async (responseJson) => 
     {
       await AsyncStorage.multiSet([['@session_token',responseJson.token],['@id',String(responseJson.id)]]);
-      
-      
-      this.props.navigation.navigate("Profile");
+      this.props.navigation.navigate('Homes', { screen: 'Profile' });
     })
     .catch((error) => {
       console.error(error);
@@ -62,9 +61,27 @@ class Login extends Component {
 
 render(){
     return (
+
+     
+       
       
-      <View>
-        {console.log("123456789098765432345678909876543234567890oiuytrewertyjkjhgfdxcvb")}
+      <View style={{   
+        justifyContent: 'center',
+      alignItems: 'center',
+      marginTop:100}} >
+
+        
+      <Image 
+      style={{height:200,width:200}}
+      source={logo}
+      /> 
+      
+        
+      <View style={Style.welcome}>
+        
+      
+        
+
         <TextInput
           style={Style.inputBox}
           onChangeText={value => this.setState({email: value})}
@@ -92,6 +109,8 @@ render(){
         </TouchableOpacity>
   
         </View>
+        </View>
+        
     );
   }
 }

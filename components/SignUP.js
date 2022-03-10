@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text , Button, ScrollView, TextInput ,Alert } from 'react-native';
+import { View, Text , Button, ScrollView, TextInput ,Alert,Image} from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Style from './Style'
+import logo from './logo.png'
 
 class SignUP extends Component{
   constructor(props){
@@ -58,7 +59,18 @@ class SignUP extends Component{
 
 render(){
   return (
-    <ScrollView>
+    <View style={{   
+        justifyContent: 'center',
+      alignItems: 'center',
+      marginTop:100
+      }} >
+
+        
+      <Image 
+      style={{height:200,width:200}}
+      source={logo}
+      /> 
+    <View style={Style.welcome}>
                 <TextInput
                     placeholder="Enter your first name..."
                     onChangeText={(first_name) => this.setState({first_name})}
@@ -101,8 +113,8 @@ render(){
                     <Text style={Style.buttonText}>Login</Text>
 
                 </TouchableOpacity>
-                
-            </ScrollView>
+                </View>
+            </View>
 
   );}
 
