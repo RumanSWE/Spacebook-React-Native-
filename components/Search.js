@@ -3,6 +3,7 @@ import { View, Text , FlatList ,TextInput,Button,Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Style from './Style';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
+import UploadDraft from './UploadDraft'
 
 class Search extends Component  {
 
@@ -18,9 +19,12 @@ class Search extends Component  {
   }
   componentDidMount() 
   {
+    
     this.unsubscribe = this.props.navigation.addListener('focus', () => 
     {
+      
       this.checkLoggedIn();
+      UploadDraft.dateCheck();
     });
   }
   

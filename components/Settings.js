@@ -3,6 +3,7 @@ import { View, Text , FlatList ,Button,ScrollView,TextInput,Alert,TouchableOpaci
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Camera } from 'expo-camera';
 import Style from "./Style"
+import UploadDraft from './UploadDraft'
 
 class Settings extends Component  {
   constructor(props){
@@ -25,6 +26,7 @@ async componentDidMount()
   this.unsubscribe = this.props.navigation.addListener('focus', () => 
   {
     this.checkLoggedIn();
+    UploadDraft.dateCheck();
     this.GetUser();
   });
   

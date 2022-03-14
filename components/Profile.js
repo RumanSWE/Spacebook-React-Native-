@@ -3,6 +3,7 @@ import { View, Text , FlatList ,Button,ScrollView,TextInput,Alert,TouchableOpaci
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationActions } from 'react-navigation';
 import Style from "./Style"
+import UploadDraft from './UploadDraft'
 
 
 
@@ -32,12 +33,10 @@ class Profile extends Component  {
   async componentDidMount() 
   {
    
-
-
-  
-    
     this.unsubscribe = this.props.navigation.addListener('focus', () => 
     {
+      this.checkLoggedIn();
+      UploadDraft.dateCheck();
 
 
       try
@@ -50,7 +49,7 @@ class Profile extends Component  {
       catch(e)
       {console.log(e)}
 
-      this.checkLoggedIn();
+      
       this.userCheck();
 
 
@@ -650,7 +649,8 @@ class Profile extends Component  {
 
     let draft = {  
       id: String(this.state.LoggedID),  
-      text: String(this.state.text)
+      text: String(this.state.text),
+      date: null
     }  
 
     if(draft.text == "")

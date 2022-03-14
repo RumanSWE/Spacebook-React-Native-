@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import * as ALL from 'react';
-import { Text, View ,TextInput,Button,FlatList, Alert} from 'react-native';
+import { Text, View ,TextInput,Button,FlatList, Alert,Image} from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -18,7 +18,6 @@ import SignUP from './components/SignUP'
 import MyFreinds from './components/MyFreinds'
 import UploadPhoto from './components/UploadPhoto'
 import ViewDrafts from './components/ViewDrafts'
-import UploadDraft from './components/UploadDraft'
 import ProfileFriends from './components/ProfileFriends'
 
 import Search from './components/Search'
@@ -27,6 +26,7 @@ const Tab = createBottomTabNavigator();
 
 class App extends Component {
 
+ 
 
   Homes = () => 
   {
@@ -41,7 +41,6 @@ class App extends Component {
         "ViewPost",
         "UploadPhoto",
         "ViewDrafts",
-        "UploadDraft",
         "ProfileFriends"
       ].includes(route.name)
         ? () => {
@@ -50,23 +49,52 @@ class App extends Component {
         : undefined,
 
     })}>  
-      <Tab.Screen name="Profile" component={Profile}  options={{headerShown: false}} listeners={({ navigation, route }) => ({
+      <Tab.Screen name="Profile" component={Profile}  
+      options={{headerShown: false, tabBarIcon: ({size,focused,color}) => {
+        return (
+          <Image 
+      style={{height:25,width:25}}
+      source={require('./assets/profile.png')}
+      />)
+        }}}
+    
+      listeners={({ navigation, route }) => ({
     tabPress: e => {
       // Prevent default action
       e.preventDefault();
 
       navigation.navigate('Profile')
     },})}/>
-      <Tab.Screen name="Settings" component={Settings} options={{headerShown: false}} />
-      <Tab.Screen name="Freinds" component={MyFreinds} options={{headerShown: false}}/>
-      <Tab.Screen name="Search" component={Search}  options={{headerShown: false}}/>
+      <Tab.Screen name="Settings" component={Settings} options={{headerShown: false ,
+       tabBarIcon: ({size,focused,color}) => {
+        return (
+          <Image 
+      style={{height:25,width:25}}
+      source={require('./assets/settings.png')}
+      />)
+        }}} />
+      <Tab.Screen name="Freinds" component={MyFreinds} options={{headerShown: false ,
+       tabBarIcon: ({size,focused,color}) => {
+        return (
+          <Image 
+      style={{height:25,width:25}}
+      source={require('./assets/freinds.png')}
+      />)
+        }}}/>
+      <Tab.Screen name="Search" component={Search}  options={{headerShown: false ,
+       tabBarIcon: ({size,focused,color}) => {
+        return (
+          <Image 
+      style={{height:25,width:25}}
+      source={require('./assets/search.png')}
+      />)
+        }}}/>
 
-      <Tab.Screen name="UploadPhoto" component={UploadPhoto} />
-      <Tab.Screen name="Post" component={Post} />
-      <Tab.Screen name="ViewPost" component={ViewPost} />
-      <Tab.Screen name="ViewDrafts" component={ViewDrafts} />
-      <Tab.Screen name="UploadDraft" component={UploadDraft} />
-      <Tab.Screen name="ProfileFriends" component={ProfileFriends} />
+      <Tab.Screen name="UploadPhoto" component={UploadPhoto} options={{headerShown: false }}/>
+      <Tab.Screen name="Post" component={Post} options={{headerShown: false}} />
+      <Tab.Screen name="ViewPost" component={ViewPost}  options={{headerShown: false}}/>
+      <Tab.Screen name="ViewDrafts" component={ViewDrafts} options={{headerShown: false }}/>
+      <Tab.Screen name="ProfileFriends" component={ProfileFriends} options={{headerShown: false}}/>
 
       
       

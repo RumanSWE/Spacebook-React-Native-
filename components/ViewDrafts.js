@@ -1,19 +1,14 @@
-import React, {Component} from 'react';
+import React, {Component,useState} from 'react';
 import { ScrollView ,View ,Text ,FlatList, Button,TextInput  } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Style from './Style'
-//import BackgroundTimer from 'react-native-background-timer';
-
-
+import Calendar from 'react-calendar'
+import UploadDraft from './UploadDraft'
 
 
 //Add the ablity to show user profile of requested user and able to click on the name and link to there profile
 class ViewDrafts extends Component  {
-
-
-  
-
   
   constructor(props){
     super(props);
@@ -23,12 +18,15 @@ class ViewDrafts extends Component  {
         fullDraft: [],
         isLoading: true,
         TextError: "",
-        initialText: [],
-        date: "",
         time: "",
+        initialText: [],
+        date: new Date(),
+       
+        
 
     }
   }
+  
  
   
   async componentDidMount() 
@@ -36,7 +34,8 @@ class ViewDrafts extends Component  {
     this.unsubscribe = this.props.navigation.addListener('focus', () => 
     {
       this.checkLoggedIn();
-      this.getDrafts()
+      UploadDraft.dateCheck();
+      this.getDrafts();
     });
     
   }
@@ -201,25 +200,49 @@ class ViewDrafts extends Component  {
 
 
   }
-  setDate = async () =>
+  setDate = async (index) =>
   {
-      let curDate = new Date()
-      let ShortCurdate = curDate.getDate()+"/"+(curDate.getMonth()+1)+"/"+curDate.getFullYear()
-      
-      let time = this.state.time;
 
+    let curDate = new Date()
 
-      let date = new Date(String(this.state.date));
-      console.log(date.toLocaleString())
+    let id = await AsyncStorage.getItem("@id")
+    let curText = this.state.texts[index];
+    let list = this.state.fullDraft
+    
 
-      if(date == "invalid date")
+    let date = new Date(this.state.date);
+
+    let time = this.state.time;
+
+    let hour = String(time.slice(0,2));
+    let min = String(time.slice(3,5));
+
+    date.setHours(hour,min,0,0);
+    console.log(date.setHours(hour,min,0,0))
+
+    //map the date to the async draft
+    //on all screens make a check current date to upload date 
+
+    if(date == 'invalid date' || date < curDate)
+    {
+      return this.setState({TextError:"invalid format or date in the past"})
+    }
+
+    for(let i = 0; i < list.length; i++)
       {
-        return 
-      }
-      else
-      {
+        if((list[i].id == id) && (list[i].text == curText))
+        {
+          list[i].date = date;
+          
+          this.setState({fullDraft: list})
+          console.log(this.state.fullDraft)
+          this.setState({TextError:"Draft Scheduled for "+date})
+          AsyncStorage.setItem('draftStore', JSON.stringify(list))
+          this.getDrafts();
 
+        }
       }
+
 
       
   }
@@ -266,7 +289,7 @@ class ViewDrafts extends Component  {
               </TouchableOpacity>
              
 
-            <Text>{this.state.TextError}</Text>
+            <Text style={Style.errorText}>{this.state.TextError}</Text>
           
             <FlatList
               data={this.state.texts}
@@ -307,27 +330,31 @@ class ViewDrafts extends Component  {
                     >
                       <Text style={Style.buttonText}>Delete</Text>
                     </TouchableOpacity>
+                    <TextInput 
+                    placeholder='HH:MM (24 Hour Format)'
+                    value={this.state.time}
+                    onChangeText={(time) => this.setState({time})} 
+                    style={Style.inputBox}
+                    />
               
+                    <Calendar onChange={(date) => this.setState({ date })} value={this.state.date} />
                     
-                    <TextInput 
-                    placeholder='DD/MM/YYYY'
-                    value={this.state.date}
-                    onChangeText={(date) => this.setState({ date })}
-                    style={Style.inputBox}
-                    
-                    />
+    
 
-                    <TextInput 
-                    placeholder='HH:MM'
-                    onChange={this.state.time}
-                    style={Style.inputBox}
-                    />
+                   
                     
                     <TouchableOpacity
-                    onPress={() => this.setDate()}
+                    onPress={() => this.setDate(index)}
                     style={Style.buttonStyleDefault}
                     >
                       <Text style={Style.buttonText}>Schedule Upload</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                    onPress={ () => this.props.navigation.navigate('UploadDraft') }
+                    style={Style.buttonStyleDefault}
+                    >
+                      <Text style={Style.buttonText}>Upload Test Screen</Text>
                     </TouchableOpacity>
                 
                   </ScrollView>

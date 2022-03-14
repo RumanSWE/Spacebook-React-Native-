@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { ScrollView ,View ,Text ,FlatList, Button,TextInput,TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Style from './Style'
+import UploadDraft from './UploadDraft'
 //Add the ablity to show user profile of requested user and able to click on the name and link to there profile
 
 class ViewPost extends Component  {
@@ -20,6 +21,7 @@ class ViewPost extends Component  {
     this.unsubscribe = this.props.navigation.addListener('focus', () => 
     {
       this.checkLoggedIn();
+      UploadDraft.dateCheck();
       this.GetSinglePost(this.props.route.params.items);
     });
   }  
