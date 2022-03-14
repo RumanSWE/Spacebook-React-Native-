@@ -66,11 +66,11 @@ class UploadDraft  {
     
   }
 
-  const UploadDraft = new UploadDraft();
+  const UploadDrafts = new UploadDraft();
   //export default b;
 
   
 
 
 
-export default UploadDraft
+export default UploadDrafts

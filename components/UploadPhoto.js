@@ -3,7 +3,7 @@ import { View, Text , FlatList ,Button,ScrollView,TextInput,Alert,TouchableOpaci
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Camera } from 'expo-camera';
 import Style from './Style'
-import UploadDraft from './UploadDraft'
+import UploadDrafts from './UploadDraft'
 
 class UploadPhoto extends Component  {
     constructor(props){
@@ -23,7 +23,7 @@ class UploadPhoto extends Component  {
   this.unsubscribe = this.props.navigation.addListener('focus', () => 
   {
     this.checkLoggedIn();
-    UploadDraft.dateCheck();
+    UploadDrafts.dateCheck();
   });
   const { status } = await Camera.requestCameraPermissionsAsync();
   this.setState({hasPermission: status === 'granted'});

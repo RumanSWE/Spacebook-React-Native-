@@ -3,7 +3,7 @@ import { ScrollView ,View ,Text ,FlatList, Button} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Style from './Style'
-import UploadDraft from './UploadDraft'
+import UploadDrafts from './UploadDraft'
 
 //Add the ablity to show user profile of requested user and able to click on the name and link to there profile
 
@@ -25,7 +25,7 @@ class MyFreinds extends Component  {
     this.unsubscribe = this.props.navigation.addListener('focus', () => 
     {
       this.checkLoggedIn();
-      UploadDraft.dateCheck();
+      UploadDrafts.dateCheck();
       this.getReqList();
       this.getFriendList();
     });

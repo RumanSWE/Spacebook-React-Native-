@@ -4,7 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Style from './Style'
 import Calendar from 'react-calendar'
-import UploadDraft from './UploadDraft'
+import 'react-calendar/dist/Calendar.css';
+import UploadDrafts from './UploadDraft'
 
 
 //Add the ablity to show user profile of requested user and able to click on the name and link to there profile
@@ -34,7 +35,7 @@ class ViewDrafts extends Component  {
     this.unsubscribe = this.props.navigation.addListener('focus', () => 
     {
       this.checkLoggedIn();
-      UploadDraft.dateCheck();
+      UploadDrafts.dateCheck();
       this.getDrafts();
     });
     
@@ -336,25 +337,19 @@ class ViewDrafts extends Component  {
                     onChangeText={(time) => this.setState({time})} 
                     style={Style.inputBox}
                     />
-              
-                    <Calendar onChange={(date) => this.setState({ date })} value={this.state.date} />
-                    
-    
 
-                   
+                    <View style={{   flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',}}> 
+                    <Calendar onChange={(date) => this.setState({ date })} value={this.state.date} />
+                    </View>
+                  
                     
                     <TouchableOpacity
                     onPress={() => this.setDate(index)}
                     style={Style.buttonStyleDefault}
                     >
                       <Text style={Style.buttonText}>Schedule Upload</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                    onPress={ () => this.props.navigation.navigate('UploadDraft') }
-                    style={Style.buttonStyleDefault}
-                    >
-                      <Text style={Style.buttonText}>Upload Test Screen</Text>
                     </TouchableOpacity>
                 
                   </ScrollView>
