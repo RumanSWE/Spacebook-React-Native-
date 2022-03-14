@@ -19,12 +19,12 @@ class UploadDraft  {
           
           if(parsed[i].date != null && new Date(parsed[i].date) <= today)
           {
-            let value = await AsyncStorage.getItem('@session_token');
+            let token = await AsyncStorage.getItem('@session_token');
             let id = parsed[i].id;
             
             return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/post", {
               method: 'POST',
-              headers: {'Content-Type': 'application/json','X-Authorization':  value},
+              headers: {'Content-Type': 'application/json','X-Authorization':  token},
               body: JSON.stringify({
                 text: parsed[i].text
               })
@@ -41,7 +41,6 @@ class UploadDraft  {
                 parsed.splice(i, 1);
                 AsyncStorage.setItem('draftStore', JSON.stringify(parsed))
           
-                console.log(AsyncStorage.getItem('draftStore'),"heleoeo")
               }else{
                 
                   throw 'Something went wrong';
