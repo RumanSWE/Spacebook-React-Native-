@@ -1,5 +1,5 @@
 import React, { Component, useState } from "react";
-import { ScrollView,View,Text,FlatList,TextInput } from "react-native";
+import { ScrollView, View, Text, FlatList, TextInput } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Style from "./Style";
@@ -159,6 +159,9 @@ class ViewDrafts extends Component {
     const id = await AsyncStorage.getItem("@id");
 
     const curText = this.state.texts[index];
+    if (curText == "") {
+      return this.setState({ TextError: "No Text Saved" });
+    }
     const list = this.state.fullDraft;
     const time = this.state.time[index];
 
@@ -194,12 +197,12 @@ class ViewDrafts extends Component {
   };
   checkSchedule = (index) => {
     let date = this.state.fullDraft[index].date;
-    
+
     if (date != null) {
       date = new Date(date);
       return (
         <View>
-          <Text>Schedule Upload For {date.toLocaleString('en-GB')}</Text>
+          <Text>Schedule Upload For {date.toLocaleString("en-GB")}</Text>
         </View>
       );
     }

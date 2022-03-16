@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View,Text,ScrollView,TextInput,Image } from "react-native";
+import { View, Text, ScrollView, TextInput, Image } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Style from "./Style";
 import logo from "./logo.png";
@@ -17,19 +17,43 @@ class SignUP extends Component {
     };
   }
   signup = () => {
+    const regEmail = new RegExp("[a-z0-9]+@[a-z]+.[a-z]{2,3}");
+    const regName = new RegExp("^(?=.{1,40}$)[a-zA-Z]+(?:[-'s][a-zA-Z]+)*$");
+
+    let emailReg = regEmail.test(this.state.email);
+
+    let passLen = this.state.password.length > 5;
+
+    let first = regName.test(this.state.first_name);
+    let last = regName.test(this.state.last_name);
+
+    if (emailReg == false) {
+      return this.setState({ errorTxt: "Invalid Email" });
+    } else if (passLen == false) {
+      return this.setState({errorTxt: "Invalid Password"});
+    } else if (first == false) {
+      return this.setState({ errorTxt: "Invalid First Name" });
+    } else if (last == false) {
+      return this.setState({ errorTxt: "Invalid Last Name" });
+    }
 
     return fetch("http://localhost:3333/api/1.0.0/user", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(this.state),
+      body: JSON.stringify({
+        first_name: this.state.first_name,
+        last_name: this.state.last_name,
+        email: this.state.email,
+        password: this.state.password,
+      }),
     })
       .then((response) => {
         if (response.status === 201) {
           this.props.navigation.navigate("Login");
         } else if (response.status === 400) {
-          this.setState({ errorTxt: "Invalid Or Missng Information" });
+          return this.setState({ errorTxt: "Invalid Data or Email Already In Use" });
         } else if (response.status == 500) {
           this.setState({ errorTxt: "Server Not Responding" });
         } else {

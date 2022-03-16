@@ -16,22 +16,26 @@ class Login extends Component {
     };
   }
   login = async () => {
+
     return fetch("http://localhost:3333/api/1.0.0/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(this.state),
+      body: JSON.stringify({
+        email: this.state.email,
+        password: this.state.password,
+      })
     })
       .then((response) => {
         if (response.status === 200) {
           return response.json();
         } else if (response.status === 400) {
-          this.setState({ errorTxt: "Invalid Email or Password" });
+          return this.setState({ errorTxt: "Invalid Email or Password" });
           //used display the resposnes from the server
         } else if (response.status == 500) {
-          this.setState({ errorTxt: "Server Not Eesponding" });
+          return this.setState({ errorTxt: "Server Not Eesponding" });
           //each error code returns a diffrent response to the user
         } else {
-          this.setState({ errorTxt: "Something went wrong" });
+          return this.setState({ errorTxt: "Something went wrong" });
           throw "Something went wrong";
         }
       })

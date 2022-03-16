@@ -1,5 +1,9 @@
 Installation:
 
+sorry if there are other packages please ignore them
+
+run using "expo start" on web ONLY
+
 npm install react-calendar
 
 link: https://www.npmjs.com/package/react-calendar

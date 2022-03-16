@@ -95,10 +95,28 @@ class Settings extends Component {
       });
   };
   updateItem = async () => {
+    
+    if (this.state.first_name == "" ||  this.state.last_name == "" ||this.state.email == "" )
+    {
+      return this.setState({ TextError: "Error Bad / Missing Data" });
+    }
+
+    const reg = new RegExp("[a-z0-9]+@[a-z]+\.[a-z]{2,3}");
+    
+    let regBool = reg.test(this.state.email);
+
+    if(regBool == false)
+    {
+      return this.setState({ TextError: "Bad Email Address" });
+    }
+   
+    
+    
     const value = await AsyncStorage.getItem("@session_token");
     const id = await AsyncStorage.getItem("@id");
 
     if (this.state.password == "") {
+      
       return fetch("http://localhost:3333/api/1.0.0/user/" + id, {
         method: "PATCH",
         headers: {
@@ -114,9 +132,11 @@ class Settings extends Component {
         .then((response) => {
           if (response.status === 200) {
             this.setState({ TextError: "Information Sucessfully Updated" });
-          } else if (response.status === 401) {
+          } else if (response.status === 403) {
             this.setState({ TextError: "Error Bad / Missing Data" });
-          } else {
+          } else if (response.status == 400){
+            this.setState({ TextError: "Error Bad / Missing Data" });
+          }else {
             throw "Something went wrong";
           }
         })
@@ -128,6 +148,9 @@ class Settings extends Component {
           console.log(error);
         });
     } else if (this.state.password != "")
+      if(this.state.password.length < 5)
+      {return this.setState({ TextError: "Password Must Be More Than 5 Characters" });}
+
       return fetch("http://localhost:3333/api/1.0.0/user/" + id, {
         method: "PATCH",
         headers: {
@@ -144,7 +167,9 @@ class Settings extends Component {
         .then((response) => {
           if (response.status === 200) {
             this.setState({ TextError: "Information Sucessfully Updated" });
-          } else if (response.status === 401) {
+          } else if (response.status === 403) {
+            this.setState({ TextError: "Error Bad / Missing Data" });
+          } else if (response.status == 400){
             this.setState({ TextError: "Error Bad / Missing Data" });
           } else {
             throw "Something went wrong";
