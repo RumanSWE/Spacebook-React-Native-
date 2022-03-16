@@ -72,7 +72,7 @@ class ViewDrafts extends Component {
     let textList = [];
     let other = [];
 
-    if (parsed.length == 0) {
+    if (parsed == null || parsed.length == 0) {
       this.setState({ texts: [] });
       return this.setState({
         TextError: "No Saved Drafts , Please Save Draft",
@@ -196,8 +196,9 @@ class ViewDrafts extends Component {
     }
   };
   checkSchedule = (index) => {
+    try
+    {
     let date = this.state.fullDraft[index].date;
-
     if (date != null) {
       date = new Date(date);
       return (
@@ -206,6 +207,13 @@ class ViewDrafts extends Component {
         </View>
       );
     }
+    }
+    catch
+    {
+      let date = null;
+    }
+
+
   };
 
   render() {

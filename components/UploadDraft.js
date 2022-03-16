@@ -9,7 +9,7 @@ class UploadDraft {
     const parsed = JSON.parse(get)
 
     const today = new Date()
-
+    if(parsed != null){
     for (let i = 0; i < parsed.length; i++) {
       if (parsed[i].date != null && new Date(parsed[i].date) <= today) {
         const token = await AsyncStorage.getItem('@session_token')
@@ -44,6 +44,7 @@ class UploadDraft {
           })
       }
     }
+  }
   }
 }
 

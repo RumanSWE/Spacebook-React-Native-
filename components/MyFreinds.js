@@ -61,6 +61,8 @@ class MyFreinds extends Component {
         //"reloads" the page by updating the state of items this way inforamtion is updated without changing pages
       })
       .catch((error) => {
+        this.getReqList();
+        this.getFriendList();
         console.log(error);
       });
   };
@@ -89,6 +91,8 @@ class MyFreinds extends Component {
         //state refresh 
       })
       .catch((error) => {
+        this.getReqList();
+        this.getFriendList();
         console.log(error);
       });
   };

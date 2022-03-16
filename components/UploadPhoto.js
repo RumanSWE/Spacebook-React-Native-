@@ -91,7 +91,7 @@ class UploadPhoto extends Component {
                 this.setState({ type: type });
               }}
             >
-              <Text>Flip </Text>
+              <Text style={{backgroundColor: 'white',alignSelf: 'flex-start',borderRadius:15,padding:3}}>Flip </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -103,7 +103,7 @@ class UploadPhoto extends Component {
                 width: 100,
               }}
             >
-              <Text>Upload Picture</Text>
+              <Text style={{backgroundColor: 'white',alignSelf: 'flex-start',borderRadius:15,padding:3}}>Upload Picture</Text>
             </TouchableOpacity>
           </Camera>
           <Text>{this.state.TextError}</Text>
