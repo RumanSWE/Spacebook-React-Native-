@@ -1,132 +1,118 @@
-import React, {Component} from 'react';
-import { View, Text , FlatList ,TextInput,Button,Alert} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Style from './Style';
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import UploadDrafts from './UploadDraft'
+import React, { Component } from "react";
+import { View, Text, FlatList, TextInput } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Style from "./Style";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
+import UploadDrafts from "./UploadDraft";
 
-class Search extends Component  {
-
-  constructor(props){
+class Search extends Component {
+  constructor(props) {
     super(props);
-    
 
-  this.state= {
+    this.state = {
       search: "",
       searchList: [],
-      text: ""
-    }
+      text: "",
+    };
   }
-  componentDidMount() 
-  {
-    
-    this.unsubscribe = this.props.navigation.addListener('focus', () => 
-    {
-      
+  componentDidMount() {
+    this.unsubscribe = this.props.navigation.addListener("focus", () => {
       this.checkLoggedIn();
       UploadDrafts.dateCheck();
     });
   }
-  
-  componentWillUnmount() 
-  {
+
+  componentWillUnmount() {
     this.unsubscribe();
   }
 
-  checkLoggedIn = async () => 
-  {
-    const value = await AsyncStorage.getItem('@session_token');
-    console.log(value)
+  checkLoggedIn = async () => {
+    const value = await AsyncStorage.getItem("@session_token");
+    console.log(value);
 
-    if (value == null) 
-    {
-        this.props.navigation.navigate('Login');
+    if (value == null) {
+      this.props.navigation.navigate("Login");
     }
   };
 
-  GetSearch = async() =>{
-
-    if (this.state.search == "")
-    {
-      return this.setState({text: "Error: Cant Search For Nothing"})
+  GetSearch = async () => {
+    if (this.state.search == "") {
+      return this.setState({ text: "Error: Cant Search For Nothing" });
     }
 
-    const value = await AsyncStorage.getItem('@session_token');
-    
-    console.log("hello??");
-    this.setState({text: ""})
-    
-    return fetch("http://localhost:3333/api/1.0.0/search?q="+this.state.search, {
-    
-      'headers': {'X-Authorization':  value},
-    })
-    .then((response) => {
-      if(response.status === 200){
-          return response.json()
-      }else if(response.status === 401){
-        return response.json()
-      }else{
-          throw 'Something went wrong';
+    const value = await AsyncStorage.getItem("@session_token");
+
+    this.setState({ text: "" });
+
+    return fetch(
+      "http://localhost:3333/api/1.0.0/search?q=" + this.state.search,
+      {
+        headers: { "X-Authorization": value },
       }
-    })
-    .then((responseJson) => {
-
-      console.log(responseJson);
-
-      this.setState({
-      isLoading: false,
-      searchList: responseJson
+    )
+      .then((response) => {
+        if (response.status === 200) {
+          return response.json();
+        } else if (response.status === 401) {
+          return response.json();
+        } else {
+          throw "Something went wrong";
+        }
       })
-      
+      .then((responseJson) => {
+        console.log(responseJson);
+
+        this.setState({
+          isLoading: false,
+          searchList: responseJson,
+        });
       })
-      
-    
-    .catch((error) => {
+
+      .catch((error) => {
         console.log(error);
-        
-    })
-  }
+      });
+  };
 
   //
 
-render() {
-
- 
+  render() {
     return (
       <ScrollView>
         <TextInput
-              placeholder="Search"
-              onChangeText={(search) => this.setState({search})}
-              value={this.state.search}
-              style={Style.inputBox}
+          placeholder="Search"
+          onChangeText={(search) => this.setState({ search })}
+          value={this.state.search}
+          style={Style.inputBox}
         />
         <TouchableOpacity
-        onPress={() => this.GetSearch()}
-        style={Style.searchBtn}
+          onPress={() => this.GetSearch()}
+          style={Style.searchBtn}
         >
           <Text style={Style.searchText}>Enter</Text>
-
         </TouchableOpacity>
-        
+
         <Text style={Style.errorText}>{this.state.text}</Text>
         <FlatList
-              data={this.state.searchList}
-              renderItem={({item}) => (
-                  <View>
-                    <TouchableOpacity
-                    onPress={ () => this.props.navigation.navigate('Profile',{ id: String(item.user_id)}) }
-                    style={Style.buttonStyleDefault}
-                    >
-                      <Text style={Style.buttonText}>{item.user_givenname+" "+item.user_familyname}</Text>
-                    </TouchableOpacity>
-                    
-                     
-                  </View>
-              )}
-              keyExtractor={(item,index) => item.user_id.toString()}
-            />
+          data={this.state.searchList}
+          renderItem={({ item }) => (
+            <View>
+              <TouchableOpacity
+                onPress={() =>
+                  this.props.navigation.navigate("Profile", {
+                    id: String(item.user_id),
+                  })
+                }
+                style={Style.buttonStyleDefault}
+              >
+                <Text style={Style.buttonText}>
+                  {item.user_givenname + " " + item.user_familyname}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          keyExtractor={(item, index) => item.user_id.toString()}
+        />
       </ScrollView>
-      
     );
   }
 }
