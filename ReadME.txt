@@ -1,29 +1,26 @@
 Installation:
 
-
 run using "expo start" on web ONLY
 
 npm install react-calendar
 
 link: https://www.npmjs.com/package/react-calendar
 --------------------------------------------------------------------------------------------------------
-Github
+About
 
-NOTE: ive had to swap github repositories half way through however i will link both:
+This project was created as a mock up of a social media app with full functionallity (based of my space idea with posting on freinds wall)
 
-NEW: https://github.com/RouteExplorer/spacebook2
+key featutes:
 
-OLD: https://github.com/RouteExplorer/Spacebook
+backend API server for saving data (Freinds , logins , passwords (encrpted) , emails etc)
+Login Page with encepytion
+Local Saving Posts
+Ability To Schedule posts
+Add & remove freinds 
+Post on own and freinds walls
+search all users to add freinds
+Upload Photos from Camera roll
+Upload Profile Picture
 ---------------------------------------------------------------------------------------------------------
 
-Justification (ex2)
 
-Unfortunately, I could not find any "background" tasks or timers, etc for react native web. I did find plenty
-for the emulators, however, this would mean the expo-camera would not work.
-
-My implementation is very simple and makes use of key and value pairs as well as being efficient unlike a
-background task it won't check it constantly and only once when the user changes screen using fewer resources.
-
-instead, I have essentially created a client-side foreground uploader. it may not be as nice but works very well
-
-----------------------------------------------------------------------------------------------------------
