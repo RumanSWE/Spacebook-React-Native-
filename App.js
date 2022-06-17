@@ -12,11 +12,6 @@ import ViewPost from './components/ViewPost'
 
 import Style from './components/Style';
 
-import { Amplify } from 'aws-amplify'
-import awsconfig from './src/aws-exports'
-Amplify.configure(awsconfig)
-
-
 import Login from './components/Login'
 import SignUP from './components/SignUP'
 import MyFreinds from './components/MyFreinds'
