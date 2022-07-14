@@ -7,11 +7,11 @@ https://user-images.githubusercontent.com/75504775/179006169-c99dd94d-7be7-49ee-
 
 --------------------------------------------------------------------------------------------------------
 
-###About
+## About
 
 This project was created as a mock up of a social media app with full functionallity (based of my space idea with posting on freinds wall)
 
-##key featutes:
+## key featutes:
 
 - backend API server for saving data (Freinds , logins , passwords (encrpted) , emails etc)
 - Login Page with encepytion
