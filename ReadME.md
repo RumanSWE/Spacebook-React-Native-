@@ -1,10 +1,7 @@
 # Installation:
 
-run using "expo start" on web ONLY
-
-npm install react-calendar
-
-link: https://www.npmjs.com/package/react-calendar
+- run using "expo start" on web ONLY
+- npm install react-calendar (https://www.npmjs.com/package/react-calendar)
 
 https://www.youtube.com/watch?v=yP0Mytyqv-c&ab_channel=RumanSanghera
 
