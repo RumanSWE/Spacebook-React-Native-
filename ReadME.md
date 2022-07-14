@@ -3,19 +3,15 @@
 - run using "expo start" on web ONLY
 - npm install react-calendar (https://www.npmjs.com/package/react-calendar)
 
-https://www.youtube.com/watch?v=yP0Mytyqv-c&ab_channel=RumanSanghera
-
-
-
 https://user-images.githubusercontent.com/75504775/179006169-c99dd94d-7be7-49ee-8e45-88ea0d9f4226.mp4
 
 --------------------------------------------------------------------------------------------------------
 
-About
+###About
 
 This project was created as a mock up of a social media app with full functionallity (based of my space idea with posting on freinds wall)
 
-key featutes:
+##key featutes:
 
 - backend API server for saving data (Freinds , logins , passwords (encrpted) , emails etc)
 - Login Page with encepytion
